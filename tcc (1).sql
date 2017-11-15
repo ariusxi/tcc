@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.4.1deb2ubuntu2
--- http://www.phpmyadmin.net
+-- version 4.6.4
+-- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Tempo de geração: 14/11/2017 às 16:44
--- Versão do servidor: 5.7.20-0ubuntu0.16.04.1
--- Versão do PHP: 5.6.31-4+ubuntu16.04.1+deb.sury.org+4
+-- Host: 127.0.0.1
+-- Generation Time: 15-Nov-2017 às 23:41
+-- Versão do servidor: 5.7.14
+-- PHP Version: 5.6.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,13 +17,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Banco de dados: `tcc`
+-- Database: `tcc`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `cargas`
+-- Estrutura da tabela `cargas`
 --
 
 CREATE TABLE `cargas` (
@@ -44,46 +44,42 @@ CREATE TABLE `cargas` (
   `bairro_e` varchar(255) NOT NULL,
   `cidade_e` varchar(255) NOT NULL,
   `estado_e` varchar(255) NOT NULL,
+  `status` int(11) NOT NULL,
   `created_at` datetime NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Fazendo dump de dados para tabela `cargas`
+-- Extraindo dados da tabela `cargas`
 --
 
-INSERT INTO `cargas` (`id`, `id_user`, `titulo`, `categoria`, `subcategoria`, `cep_r`, `rua_r`, `numero_r`, `bairro_r`, `cidade_r`, `estado_r`, `cep_e`, `rua_e`, `numero_e`, `bairro_e`, `cidade_e`, `estado_e`, `created_at`) VALUES
-(3, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:09:45'),
-(4, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:10:50'),
-(5, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:11:09'),
-(6, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:12:31'),
-(7, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:12:56'),
-(8, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:13:17'),
-(9, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:14:53'),
-(10, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:17:22'),
-(11, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:18:16'),
-(12, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:19:04'),
-(13, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:20:28'),
-(14, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:21:48'),
-(15, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:22:23'),
-(16, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:23:44'),
-(17, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:25:52'),
-(18, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:26:23'),
-(19, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:26:46'),
-(20, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 02:30:58'),
-(21, 1, 'teste', '1', '1', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 08:37:32'),
-(22, 1, 'teste', '1', '1', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 08:39:08'),
-(23, 1, 'teste', '1', '1', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 08:40:45'),
-(24, 1, 'teste', '1', '1', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 08:44:13'),
-(25, 1, 'teste', '1', '1', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 08:49:11'),
-(26, 1, 'teste', '1', '1', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 08:59:48'),
-(27, 1, 'teste', '1', '1', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 09:06:33'),
-(28, 1, 'teste', '1', '1', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 09:12:22'),
-(29, 1, 'MudanÃ§a', '1', '1', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '2017-11-14 09:16:49');
+INSERT INTO `cargas` (`id`, `id_user`, `titulo`, `categoria`, `subcategoria`, `cep_r`, `rua_r`, `numero_r`, `bairro_r`, `cidade_r`, `estado_r`, `cep_e`, `rua_e`, `numero_e`, `bairro_e`, `cidade_e`, `estado_e`, `status`, `created_at`) VALUES
+(3, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:09:45'),
+(4, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:10:50'),
+(5, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:11:09'),
+(6, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:12:31'),
+(7, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:12:56'),
+(8, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:13:17'),
+(9, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:14:53'),
+(10, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:17:22'),
+(11, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:18:16'),
+(12, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:19:04'),
+(13, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:20:28'),
+(14, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:21:48'),
+(15, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:22:23'),
+(16, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:23:44'),
+(17, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:25:52'),
+(18, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:26:23'),
+(19, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:26:46'),
+(20, 1, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-14 02:30:58'),
+(21, 10, 'teste', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-15 12:06:08'),
+(22, 10, 'MudanÃ§a', '1', '1', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-15 12:08:28'),
+(23, 1, 'Entrega de Carro', '4', '13', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-15 12:30:58'),
+(24, 1, 'Transportes de Carga', '3', '9', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', '06149-260', 'Rua MÃ¡rio Quintana', '686', 'Santa Maria', 'Osasco', 'SP', 0, '2017-11-15 13:26:16');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `categorias`
+-- Estrutura da tabela `categorias`
 --
 
 CREATE TABLE `categorias` (
@@ -93,19 +89,22 @@ CREATE TABLE `categorias` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Fazendo dump de dados para tabela `categorias`
+-- Extraindo dados da tabela `categorias`
 --
 
 INSERT INTO `categorias` (`id`, `categoria`, `views`) VALUES
 (1, 'Mudancas', 6),
 (2, 'Artigos Domesticos', 0),
-(3, 'Cargas', 0),
-(4, 'Veiculos', 0);
+(1, 'Mudancas', 6),
+(2, 'Artigos Domesticos', 0),
+(3, 'Cargas', 1),
+(3, 'Cargas', 1),
+(4, 'Veiculos', 1);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `contato`
+-- Estrutura da tabela `contato`
 --
 
 CREATE TABLE `contato` (
@@ -118,7 +117,7 @@ CREATE TABLE `contato` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Fazendo dump de dados para tabela `contato`
+-- Extraindo dados da tabela `contato`
 --
 
 INSERT INTO `contato` (`id`, `name`, `phone`, `email`, `message`, `created_at`) VALUES
@@ -127,7 +126,7 @@ INSERT INTO `contato` (`id`, `name`, `phone`, `email`, `message`, `created_at`) 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `items_cargas`
+-- Estrutura da tabela `items_cargas`
 --
 
 CREATE TABLE `items_cargas` (
@@ -143,7 +142,7 @@ CREATE TABLE `items_cargas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Fazendo dump de dados para tabela `items_cargas`
+-- Extraindo dados da tabela `items_cargas`
 --
 
 INSERT INTO `items_cargas` (`id`, `id_cargas`, `nome`, `comp`, `largura`, `altura`, `medida`, `peso`, `quantidade`) VALUES
@@ -159,20 +158,46 @@ INSERT INTO `items_cargas` (`id`, `id_cargas`, `nome`, `comp`, `largura`, `altur
 (10, 19, 'teste', '10', '10', '10', 'M', '10', '1'),
 (11, 20, 'teste', '10', '10', '10', 'M', '10', '1'),
 (12, 21, 'teste', '10', '10', '10', 'M', '10', '1'),
-(13, 22, 'teste', '10', '10', '10', 'M', '10', '1'),
-(14, 23, 'teste', '10', '10', '10', 'M', '10', '1'),
-(15, 24, 'teste', '10', '10', '10', 'M', '10', '1'),
-(16, 25, 'teste', '10', '10', '10', 'M', '10', '1'),
-(17, 26, 'teste', '10', '10', '10', 'M', '10', '1'),
-(18, 27, 'teste', '10', '10', '10', 'M', '10', '1'),
-(19, 28, 'teste', '10', '10', '10', 'M', '10', '1'),
-(20, 29, 'SofÃ¡', '10', '10', '10', 'M', '10', '1'),
-(21, 29, 'TelevisÃ£o', '10', '10', '10', 'M', '10', '1');
+(13, 21, 'teste', '10', '10', '1', 'M', '10', '1'),
+(14, 22, 'SofÃ¡', '10', '10', '10', 'M', '10', '1'),
+(15, 22, 'TelevisÃ£o', '10', '10', '10', 'M', '10', '1'),
+(16, 22, 'Geladeira', '10', '10', '10', 'M', '10', '1'),
+(17, 22, 'FogÃ£o', '10', '10', '10', 'M', '10', '1'),
+(18, 23, 'Honda Civic', '30', '32', '2', 'M', '1000', '1'),
+(19, 24, 'carga', '10', '10', '1', 'M', '10', '1'),
+(20, 24, '10', '10', '10', '10', 'M', '10', '1');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `subcategorias`
+-- Estrutura da tabela `motorista`
+--
+
+CREATE TABLE `motorista` (
+  `id` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `firstname` varchar(255) NOT NULL,
+  `lastname` varchar(255) NOT NULL,
+  `rg` varchar(13) NOT NULL,
+  `oe` varchar(2) NOT NULL,
+  `cpf` varchar(14) NOT NULL,
+  `nregistro` varchar(12) NOT NULL,
+  `cathab` varchar(3) NOT NULL,
+  `validade` varchar(10) NOT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Extraindo dados da tabela `motorista`
+--
+
+INSERT INTO `motorista` (`id`, `id_user`, `firstname`, `lastname`, `rg`, `oe`, `cpf`, `nregistro`, `cathab`, `validade`, `created_at`) VALUES
+(4, 11, 'teste', 'teste', '12.384.971-29', 'SP', '192.853.719-23', '298357193827', 'A', '2023-01-27', '2017-11-15 21:36:59');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `subcategorias`
 --
 
 CREATE TABLE `subcategorias` (
@@ -183,7 +208,7 @@ CREATE TABLE `subcategorias` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Fazendo dump de dados para tabela `subcategorias`
+-- Extraindo dados da tabela `subcategorias`
 --
 
 INSERT INTO `subcategorias` (`id`, `id_categoria`, `subcategoria`, `views`) VALUES
@@ -195,16 +220,16 @@ INSERT INTO `subcategorias` (`id`, `id_categoria`, `subcategoria`, `views`) VALU
 (6, 2, 'Eletrodomesticos', 0),
 (7, 2, 'Antiguidades', 0),
 (8, 2, 'Frageis', 0),
-(9, 3, 'Carga Fracionada', 0),
+(9, 3, 'Carga Fracionada', 1),
 (10, 3, 'Carga Completa', 0),
 (11, 4, 'Motos', 0),
 (12, 4, 'Barcos', 0),
-(13, 4, 'Carros', 0);
+(13, 4, 'Carros', 1);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `users`
+-- Estrutura da tabela `users`
 --
 
 CREATE TABLE `users` (
@@ -224,65 +249,118 @@ CREATE TABLE `users` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Fazendo dump de dados para tabela `users`
+-- Extraindo dados da tabela `users`
 --
 
 INSERT INTO `users` (`id`, `firstname`, `lastname`, `cpf`, `rg`, `datanasc`, `sexo`, `telefone`, `celular`, `email`, `password`, `level`, `created_at`) VALUES
-(1, 'Alef', 'Felix de Farias', '40137300816', '392959008', '1997-10-27', 'F', '1135924781', '11977604520', 'alef.developerweb@gmail.com', '35924781', '0', '2017-11-13 01:22:31'),
-(3, 'Transportadora', 'RazÃ£o', '124812874618276', '', '', '', '1135927481', '11977604520', 'transportadora1@transportadora.com', '35924781', '1', '2017-11-13 02:01:46');
+(1, 'Alef', 'Felix de Farias', '40137300816', '392959008', '1997-10-27', 'M', '(11)3592-4781', '(11)97760-4520', 'alef.developerweb@gmail.com', '35924781', '0', '2017-11-13 01:22:31'),
+(3, 'Transportadora', 'RazÃ£o', '124812874618276', '', '', '', '1135927481', '11977604520', 'transportadora1@transportadora.com', '35924781', '1', '2017-11-13 02:01:46'),
+(11, 'Transportadora', 'transportes', '12.389.123/5871-27', '', '', '', '(13)8947-5812', '(13)94857-2129', 'transportadora2@transportadora.com', '35924781', '1', '2017-11-15 14:22:31'),
+(10, 'teste', 'teste', '999.999.999-99', '99.999.999-9', '1997-10-27', 'F', '(19)8127-8124', '(12)98471-2984', 'teste@teste.com', 'alef35924781', '0', '2017-11-15 11:58:14');
+
+-- --------------------------------------------------------
 
 --
--- Índices de tabelas apagadas
+-- Estrutura da tabela `veiculo`
+--
+
+CREATE TABLE `veiculo` (
+  `id` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `renavam` varchar(255) NOT NULL,
+  `chassi` varchar(255) NOT NULL,
+  `placa` varchar(255) NOT NULL,
+  `modelo` varchar(255) NOT NULL,
+  `marca` varchar(255) NOT NULL,
+  `anomodelo` varchar(4) NOT NULL,
+  `anofabricacao` varchar(4) NOT NULL,
+  `categoria` varchar(255) NOT NULL,
+  `comentario` text NOT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Extraindo dados da tabela `veiculo`
+--
+
+INSERT INTO `veiculo` (`id`, `id_user`, `renavam`, `chassi`, `placa`, `modelo`, `marca`, `anomodelo`, `anofabricacao`, `categoria`, `comentario`, `created_at`) VALUES
+(16, 11, 'teste', 'teste', 'tes-1240', 'teste', 'teste', '2010', '2011', 'vuc', 'teste', '2017-11-15 17:44:28'),
+(17, 11, 'teste', 'teste', 'tes-1241', 'teste', 'teste', '2010', '2011', 'vuc', 'teste', '2017-11-15 17:44:40');
+
+--
+-- Indexes for dumped tables
 --
 
 --
--- Índices de tabela `cargas`
+-- Indexes for table `cargas`
 --
 ALTER TABLE `cargas`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `contato`
+-- Indexes for table `contato`
 --
 ALTER TABLE `contato`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `items_cargas`
+-- Indexes for table `items_cargas`
 --
 ALTER TABLE `items_cargas`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `users`
+-- Indexes for table `motorista`
+--
+ALTER TABLE `motorista`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT de tabelas apagadas
+-- Indexes for table `veiculo`
+--
+ALTER TABLE `veiculo`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de tabela `cargas`
+-- AUTO_INCREMENT for table `cargas`
 --
 ALTER TABLE `cargas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 --
--- AUTO_INCREMENT de tabela `contato`
+-- AUTO_INCREMENT for table `contato`
 --
 ALTER TABLE `contato`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
--- AUTO_INCREMENT de tabela `items_cargas`
+-- AUTO_INCREMENT for table `items_cargas`
 --
 ALTER TABLE `items_cargas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 --
--- AUTO_INCREMENT de tabela `users`
+-- AUTO_INCREMENT for table `motorista`
+--
+ALTER TABLE `motorista`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+--
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+--
+-- AUTO_INCREMENT for table `veiculo`
+--
+ALTER TABLE `veiculo`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
