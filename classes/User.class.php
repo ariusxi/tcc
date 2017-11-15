@@ -17,16 +17,73 @@
 
 		public function loginAction($parameters = array()){
 			$pdo = parent::conn();
+			$arr = array("status" => true, "results" => array());
 
-			$dataquery = $pdo->prepare("SELECT id, level FROM users WHERE (email = :login OR cpf = :login) AND password = :password");
+			$dataquery = $pdo->prepare("SELECT * FROM users WHERE (email = :login OR cpf = :login) AND password = :password");
 			$dataquery->bindParam(":login", $parameters['login']);
 			$dataquery->bindParam(":password", $parameters['senha']);
 			$dataquery->execute();
 			if($dataquery->rowCount() > 0){
 				session_start();
 				$fetch = $dataquery->fetchObject();
+				if($fetch->level == 0){
+					$arr["results"] = array(
+						"fullname" => $fetch->firstname." ".$fetch->lastname,
+						"cpf" => $fetch->cpf,
+						"rg" => $fetch->rg,
+						"datanasc" => date("d/m/Y", strtotime($fetch->datanasc)),
+						"telefone" => $fetch->telefone,
+						"celular" => $fetch->celular,
+						"email" => $fetch->email,
+						"level" => $fetch->level
+					);
+				}else{
+					$arr['results'] = array(
+						"fullname" => $fetch->firstname,
+						"razao" => $fetch->lastname,
+						"cnpj" => $fetch->cpf,
+						"telefone" => $fetch->telefone,
+						"celular" => $fetch->celular,
+						"email" => $fetch->email,
+						"level" => $fetch->level
+					);
+				}
 				$_SESSION['id_user'] = $fetch->id;
 				$_SESSION['level'] = $fetch->level;
+			}else{
+				$arr["status"] = false;
+			}
+
+			return $arr;
+		}
+
+		public function editAction($parameters = array()){
+			$pdo = parent::conn();
+			session_start();
+
+			$filtro = "";
+			if($parameters['password'] != ""){
+				$filtro = ", password = '".$parameters['password']."'";
+			}
+
+			if($_SESSION['level'] == 1){
+				$parameters["rg"] = "";
+				$parameters["datanasc"] = "";
+				$parameters["sexo"] = "";
+			}
+
+			$dataquery = $pdo->prepare("UPDATE users SET firstname = :firstname, lastname = :lastname, cpf = :cpf, rg = :rg, datanasc = :datanasc, sexo = :sexo, telefone = :telefone, celular = :celular, email = :email ".$filtro." WHERE id = :id");
+			$dataquery->bindParam(":firstname", $parameters['firstname']);
+			$dataquery->bindParam(":lastname", $parameters['lastname']);
+			$dataquery->bindParam(":cpf", $parameters['cpf']);
+			$dataquery->bindParam(":rg", $parameters['rg']);
+			$dataquery->bindParam(":datanasc", $parameters['datanasc']);
+			$dataquery->bindParam(":sexo", $parameters['sexo']);
+			$dataquery->bindParam(":telefone", $parameters['telefone']);
+			$dataquery->bindParam(":celular", $parameters['celular']);
+			$dataquery->bindParam(":email", $parameters['email']);
+			$dataquery->bindParam(":id", $_SESSION['id_user']);
+			if($dataquery->execute()){
 				return true;
 			}else{
 				return false;

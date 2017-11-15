@@ -16,7 +16,6 @@
 			                     		</div>
 			                     		<div class="col-md-12" id="feedback">
 			                     		</div>
-			                     		<hr>
 			                     		<div class="col-md-12">
 			                     			<input type="text" class="haruki" name="login" id="login_l" placeholder="Meu login: "/>
 			                     		</div>
@@ -228,7 +227,8 @@
 		   </div>
 		</div>
 
-		<script type="text/javascript" src="<?php echo BASE; ?>vendor/jquery/jquery.min.js"></script>	
+		<script type="text/javascript" src="<?php echo BASE; ?>vendor/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="<?php echo BASE; ?>js/jquery.dataTables.min.js"></script>	
 		<script type="text/javascript" src="<?php echo BASE; ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script>	
 		<script type="text/javascript" src="<?php echo BASE; ?>vendor/jquery-easing/jquery.easing.min.js"></script>	
 

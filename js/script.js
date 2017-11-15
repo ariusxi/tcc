@@ -1,3 +1,24 @@
+var prefixo;
+
+function meu_callback(conteudo){
+	if(!("erro" in conteudo)){
+
+		$("#rua_"+prefixo).val(conteudo.logradouro);
+		$("#bairro_"+prefixo).val(conteudo.bairro);
+		$("#cidade_"+prefixo).val(conteudo.localidade);
+		$("#estado_"+prefixo).val(conteudo.uf);
+		/*
+		document.getElementById("rua").value(conteudo.logradouro);
+		document.getElementById("bairro").value(conteudo.bairro);
+		document.getElementById("cidade").value(conteudo.cidade);
+		document.getElementById("estado").value(conteudo.uf);
+		*/
+	}else{
+		limpa_formulario_cep();
+		alert("CEP não encontrado");
+	}
+}
+
 $(function(){
 
 	var url = "http://localhost/tcc/";
@@ -6,6 +27,137 @@ $(function(){
 	var left, opacity, scale;
 	var animating;
 	var numitems = 1;
+	var step = 1;
+	var categoria = "";
+	var subcategoria = "";
+	var menu = false;
+	var cadastro = false;
+
+	function getAnuncios(){
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Anuncio/carregar',
+			dataType: 'json',
+			success: function(retorno){
+				if(retorno.status == "ok"){
+					var html = "<h3>Anúncios Pendentes</h3><table class='table'>";
+					html += "<thead class='small-text'><tr><th>#</th><th>Titulo</th><th>Data de Anúncio</th><th>Categoria</th><th>Subcategoria</th><th>Ações</th></tr></thead><tbody>";
+					$.each(retorno.results, function(i, value){
+						html += "<tr><td>"+value.id+"</td><td>"+value.titulo+"</td><td>"+value.created_at+"</td><td>"+value.categoria+"</td><td>"+value.subcategoria+"</td><td><a href='' class='view' id='"+value.id+"'>Ver mais</a></td></tr>";
+					});
+					html += "</tbody></table>";
+					$(".anuncios").html(html);
+					$(".anuncios table").dataTable({
+						language: {
+						    "sEmptyTable": "Nenhum registro encontrado",
+						    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+						    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+						    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+						    "sInfoPostFix": "",
+						    "sInfoThousands": ".",
+						    "sLengthMenu": "_MENU_ resultados por página",
+						    "sLoadingRecords": "Carregando...",
+						    "sProcessing": "Processando...",
+						    "sZeroRecords": "Nenhum registro encontrado",
+						    "sSearch": "Pesquisar",
+						    "oPaginate": {
+						        "sNext": "Próximo",
+						        "sPrevious": "Anterior",
+						        "sFirst": "Primeiro",
+						        "sLast": "Último"
+						    },
+						    "oAria": {
+						        "sSortAscending": ": Ordenar colunas de forma ascendente",
+						        "sSortDescending": ": Ordenar colunas de forma descendente"
+						    }
+						},
+						responsive: true
+					});
+				}else{
+					$(".anuncios").html("<center><h3>Nenhum Anúncio em Andamento</h3></center>");
+				}
+			}, error: function(e){
+				console.log(e);
+			}
+		});
+	}
+
+	function setDados(dados){
+		if(dados.level == 0){
+			localStorage.setItem("fullname", dados.fullname);
+			localStorage.setItem("cpf", dados.cpf);
+			localStorage.setItem("rg", dados.rg);
+			localStorage.setItem("datanasc", dados.datanasc);
+			localStorage.setItem("email", dados.email);
+			localStorage.setItem("telefone", dados.telefone);
+			localStorage.setItem("celular", dados.celular);
+			localStorage.setItem("level", dados.level);
+		}else{
+			localStorage.setItem("fullname", dados.fullname);
+			localStorage.setItem("razao", dados.razao);
+			localStorage.setItem("email", dados.email);
+			localStorage.setItem("celular", dados.celular);
+			localStorage.setItem("telefone", dados.telefone);
+			localStorage.setItem("cnpj", dados.cnpj);
+			localStorage.setItem("level", dados.level);
+		}
+	}
+
+	function limpa_formulario_cep(){
+		document.getElementById('rua').value=("");
+        document.getElementById('bairro').value=("");
+       	document.getElementById('cidade').value=("");
+        document.getElementById('estado').value=("");
+	}
+
+	function pesquisacep(valor, prefix){
+		var cep = valor.replace(/\D/g, '');
+		if(cep != ""){
+
+			prefixo = prefix;
+
+			var validacep = /^[0-9]{8}$/;
+
+			if(validacep.test(cep)){
+				document.getElementById('rua_'+prefix).value="...";
+                document.getElementById('bairro_'+prefix).value="...";
+                document.getElementById('cidade_'+prefix).value="...";
+                document.getElementById('estado_'+prefix).value="...";
+
+                var script = document.createElement('script');
+
+                script.src = '//viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+                
+                document.body.appendChild(script);
+			}else{
+				limpa_formulario_cep();
+                alert("Formato de CEP inválido.");
+			}
+		}else{
+			limpa_formulario_cep();
+		}
+	}
+
+	$(document).on("change", "#cep_e, #cep_r", function(){
+		var prefix = $(this).attr("id");
+		prefix = prefix.split("_")[1];
+		pesquisacep($(this).val(), prefix);
+	});
+
+	$(".menu-toggle").click(function(){
+		if(menu == false){
+			$(".menu-side").fadeIn();
+			$(this).html("<i class='fa fa-close'></i>");
+			menu = true;
+		}else{
+			$(".menu-side").fadeOut();
+			menu = false;
+			$(this).html("<i class='fa fa-reorder'></i>");
+		}
+
+
+		return false;
+	});
 
 	$("#cpf_c").mask("999.999.999-99");
 	$("#rg_c").mask("99.999.999-9");
@@ -63,14 +215,57 @@ $(function(){
 		return false;
 	});
 	
-	$(".page").click(function(e){
+	$(document).on("click",".page",function(e){
 		e.preventDefault();
 
 		numitems = 1;
 
 		var page = $(this).attr("id");
+		var fullname = localStorage.getItem("fullname");
+		var cpf = localStorage.getItem("cpf");
+		var rg = localStorage.getItem("rg");
+		var datanasc = localStorage.getItem("datanasc");
+		var telefone = localStorage.getItem("telefone");
+		var celular = localStorage.getItem("celular");
+		var email = localStorage.getItem("email");
+		var largura = $(document).width();
 
-		$(".perfil").load(url+'pages/'+page+'.php');
+		var perfil = "";
+		if(localStorage.getItem("level") == 0){
+			perfil += '<div class="details-profile">';
+			perfil += '<h3>'+localStorage.getItem("fullname")+'</h3>';
+			perfil += '<p>CPF: '+localStorage.getItem("cpf")+'</p>';
+			perfil += '<p>RG: '+localStorage.getItem("rg")+'</p>';
+			perfil += '<p>Data de Nascimento: '+localStorage.getItem("datanasc")+'</p>';
+			perfil += '<p>Telefone: '+localStorage.getItem("telefone")+'</p>';
+			perfil += '<p>Celular: '+localStorage.getItem("celular")+'</p>';
+			perfil += '<p>Email: '+localStorage.getItem("email")+'</p>';
+			perfil += '</div>';
+		}else{
+			perfil += '<div class="details-profile">';
+			perfil += '<h3>'+localStorage.getItem("fullname")+'</h3>';
+			perfil += '<p>Razão Social: '+localStorage.getItem("razao")+'</p>';
+			perfil += '<p>CNPJ: '+localStorage.getItem("cnpj")+'</p>';
+			perfil += '<p>Telefone: '+localStorage.getItem("telefone")+'</p>';
+			perfil += '<p>Celular: '+localStorage.getItem("celular")+'</p>';
+			perfil += '<p>Email: '+localStorage.getItem("email")+'</p>';
+			perfil += '</div>';
+		}
+
+		if(page == "profile"){
+			$(".perfil").html('<div class="container-fluid"><div class="row"><div class="col-md-12"><div class="card"><div class="profile">'+perfil+'<a class="btn btn-primary btn-xl page" id="edit">Editar Perfil</a></div></div></div><div class="col-md-12"><div class="card anuncios"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div></div></div></div>');
+			getAnuncios()
+		}else{
+			$(".perfil").load(url+'pages/'+page+'.php');
+		}
+
+		if(largura <= 1085){
+			$(".menu-side").fadeOut();
+			$(".menu-toggle").html("<i class='fa fa-reorder'></i>");
+			menu = false;
+		}else{
+			$(".menu-side").show();
+		}
 
 		$.ajax({
 			type: 'POST',
@@ -101,17 +296,8 @@ $(function(){
 		$(".items").append(add);
 	});
 
-	
-
-	$(document).on("click", ".next", function(){
-		if(animating) return false;
-		animating = true;
-		
-		current_fs = $(this).parent();
-		next_fs = $(this).parent().next();
-
-		var categoria = $("input[name=categoria]:checked").val();
-
+	$(document).on("change", "input[name=categoria]", function(){
+		var categoria = $(this).attr('id');
 		$.ajax({
 			type: 'POST',
 			url: url+'sys/Anuncio/subcategorias',
@@ -130,7 +316,30 @@ $(function(){
 					$(".subcategorias").html(html);
 				}
 			}
-		})
+		});
+	});
+
+	$(document).on("click", ".next", function(){
+		if(animating) return false;
+		animating = true;
+		
+		current_fs = $(this).parent();
+		next_fs = $(this).parent().next();
+
+		categoria = $("input[name=categoria]:checked").val();
+		subcategoria = $("input[name=subcategoria]:checked").val();
+
+		if(step == 1 && categoria == ""){
+			$("#feedback").html("<div style='color:red;'>Você deve selecionar uma categoria</div>");
+			hidemessage("#feedback");
+			return false;
+		}else if(step == 2 && subcategoria == ""){
+			$("#feedback").html("<div style='color:red;'>Você deve selecionar uma subcategoria</div>");
+			hidemessage("#feedback");
+			return false;
+		}
+
+		$("#cep").mask("99999-999");
 		
 		//activate next step on progressbar using the index of next_fs
 		$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
@@ -158,6 +367,7 @@ $(function(){
 			//this comes from the custom easing plugin
 			easing: 'easeInOutBack'
 		});
+		step++;
 	});
 
 	$(document).on("click", ".previous", function(){
@@ -165,6 +375,7 @@ $(function(){
 		animating = true;
 		
 		current_fs = $(this).parent();
+
 		previous_fs = $(this).parent().prev();
 		
 		//de-activate current step on progressbar
@@ -195,6 +406,82 @@ $(function(){
 		});
 	});
 
+	$(document).on("submit", "#edit", function(e){
+		e.preventDefault();
+
+		var firstname = $("#firstname").val();
+		var lastname = $("#lastname").val();
+		var cpf = $("#cpf").val();
+		var rg = $("#rg").val();
+		var datanasc = $("#datanasc").val();
+		var sexo = $("#sexo").val();
+		var telefone = $("#telefone").val();
+		var celular = $("#celular").val();
+		var email = $("#email").val();
+		var password = $("#password").val();
+		var confpass = $("#confpass").val();
+
+		if(firstname == "" || lastname == "" || cpf == "" || rg == "" || datanasc == "" || sexo == "" || telefone == "" || celular == "" || email == ""){
+			$("#feedback").html("<div style='color:red;'>Você deve preencher os campos obrigatórios</div>");
+			hidemessage("#feedback");
+			return false;
+		}
+
+		if(password != confpass){
+			$("#feedback").html("<div style='color:red;'>As senhas não estão conferindo</div>");
+			hidemessage("#feedback");
+			return false;
+		}
+
+		if(password.length < 8 && password != ""){
+			$("#feedback").html("<div style='color:red;'>A senha deve ser maior que 8 digitos</div>");
+			hidemessage("#feedback");
+			return false;
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/User/edit',
+			dataType: 'json',
+			data: {
+				firstname: firstname,
+				lastname: lastname,
+				cpf: cpf,
+				rg: rg,
+				datanasc: datanasc,
+				sexo: sexo,
+				telefone: telefone,
+				celular: celular,
+				email: email,
+				password: password
+			}, success: function(retorno){
+				if(retorno == true){
+					$("#feedback").html("<div style='color:green;'>Perfil alterado com sucesso</div>");
+					hidemessage("#feedback");
+				}else{
+					$("#feedback").html("<div style='color:red;'>Ocorreu um erro, tente novamente mais tarde</div>");
+					hidemessage("#feedback");
+				}
+			}
+		})
+
+		return false;
+	});
+
+	$(".anuncios").ready(function(){
+		getAnuncios();
+	});
+
+	$(document).on("click", ".veiculo", function(){
+		if(cadastro == false){
+			$(".cadastro").slideDown();
+			cadastro = true;
+		}else{
+			$(".cadastro").slideUp();
+			cadastro = false;
+		}
+	});
+
 	$("#login").submit(function(e){
 		e.preventDefault();
 
@@ -216,14 +503,16 @@ $(function(){
 				senha: senha
 			},
 			success: function(retorno){
-				console.log(retorno);
-				if(retorno == true){
+				if(retorno.status == true){
+					setDados(retorno.results);
 					$(".ml-auto").html('<li class="nav-item"><a class="nav-link js-scroll-trigger" href="#services">Serviços</a></li><li class="nav-item"><a class="nav-link js-scroll-trigger" href="#categorias">Categorias</a></li><li class="nav-item"><a class="nav-link js-scroll-trigger" href="#sobre">Sobre</a></li><li class="nav-item"> <a class="nav-link js-scroll-trigger" href="profile">Meu Perfil</a></li><li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contato">Contato</a></li>');
 					$('#login').modal('toggle');
 				}else{
 					$("#feedback").html("<div style='color:red;'>Login ou Senha Incorretos</div>");
 					hidemessage("#feedback");
 				}
+			}, error: function(e){
+				console.log(e);
 			}
 		})
 
@@ -267,7 +556,7 @@ $(function(){
 		if(password.length < 8){
 			$("#feedback_c").html("<div style='color:red;'>Sua senha deve ter no mínimo 8 dígitos</div>");
 			hidemessage("#feedback_c");
-			return false
+			return false;
 		}
 
 		$.ajax({
@@ -338,6 +627,12 @@ $(function(){
 			return false
 		}
 
+		if(password.length < 8){
+			$("#feedback_t").html("<div style='color:red;'>Sua senha deve ter no mínimo 8 dígitos</div>");
+			hidemessage("#feedback_t");
+			return false
+		}
+
 		$.ajax({
 			type: 'POST',
 			url: url+'sys/User/transportadora',
@@ -352,22 +647,103 @@ $(function(){
 				password: password,
 				level: 1
 			}, success: function(retorno){
-				console.log(retorno);
 				if(retorno == true){
 					$(".send").text(email);
 					$("."+type).hide();
 					$(".email").fadeIn();
 				}else if(retorno == "existe"){
-					$("#feedback_c").html("<div style='color:red;'>Já existe uma conta com esses dados</div>");
-					hidemessage("#feedback_c");
+					$("#feedback_t").html("<div style='color:red;'>Já existe uma conta com esses dados</div>");
+					hidemessage("#feedback_t");
 				}else{
 					$("#feedback_c").html("<div style='color:red;'>Ocorreu um erro, tente novamente mais tarde</div>");
-					hidemessage("#feedback_c");
+					hidemessage("#feedback_t");
 				}
 			}, error: function(e){
 				console.log(e);
 			}
 		})
+
+		return false;
+	});
+
+	$(document).on("submit", "#veiculo", function(e){
+		e.preventDefault();
+
+		var renavam = $("#renavam").val();
+		var chassi = $("#chassi").val();
+		var placa = $("#placa").val();
+		var modelo = $("#modelo").val();
+		var marca = $("#marca").val();
+		var anomodelo = $("#anomodelo").val();
+		var anofabricacao = $("#anofabricacao").val();
+		var categoria = $("#categoria").val();
+		var comentario = $("#comentario").val();
+
+		if(renavam == "" || chassi == "" || placa == "" || modelo == "" || marca == "" || anomodelo == "" || anofabricacao == "" || categoria == ""){
+			$("#feedback").html("<div style='color:red;'>Voce deve preencher todos os campos obrigatórios</div>");
+			hidemessage("#feedback");
+			return false;
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Veiculo/register',
+			dataType: 'json',
+			data: {
+				renavam: renavam,
+				chassi: chassi,
+				placa: placa,
+				modelo: modelo,
+				marca: marca,
+				anomodelo: anomodelo,
+				anofabricacao: anofabricacao,
+				categoria: categoria,
+				comentario: comentario
+			}, success: function(retorno){
+				console.log(retorno);
+				if(retorno == false){
+					$("#feedback").html("<div style='color:red;'>Ocorreu um erro, tente novamente mais tarde</div>");
+					hidemessage("#feedback");
+				}else if(retorno == "existe"){
+					$("#feedback").html("<div style='color:red;'>Já existe um veiculo cadastrado com essa placa</div>");
+					hidemessage("#feedback");
+				}else{
+					var num = $(".veiculos li").length;
+
+					console.log(num);
+
+					$("#feedback").html("<div style='color:green;'>Veiculo cadastrado com sucesso</div>");
+					$(".cadastro").slideUp();
+					var html = "<li class='veiculo_"+retorno.results+"'>";
+						html += '<div class="icon"><i class="fa fa-truck" aria-hidden="true"></i></div>';
+						html += '<div class="details">';
+						html += '<strong><label>'+modelo+'</label></strong>';
+						html += '<p>';
+						html += 'Placa: '+placa+'<br>';
+						html += 'Marca: '+marca+'<br>';
+						html += 'Chassi: '+chassi+'<br>';
+						html += 'Ano de Fabricação: '+anofabricacao+'<br>';
+						html += 'Ano do Modelo: '+anomodelo+'<br>';
+						html += 'Renavam: '+renavam+'<br>';
+						html += '</p>';
+						html += '</div>';
+						html += '<a class="delete" id="'+retorno.results+'"><i class="fa fa-trash-o" aria-hidden="true"></i></a>';
+						html += "</li>";
+
+					if(num == 0){
+						html = "<ul class='list-items'>"+html+"</ul>";
+						$(".veiculos").html(html);
+					}else{
+						$(".veiculos ul").append(html);
+					}
+
+					cadastro = false;
+					hidemessage("#feedback");
+				}
+			}, error: function(e){
+				console.log(e);
+			}
+		});
 
 		return false;
 	});

@@ -31,6 +31,7 @@
     	<link href="<?php echo BASE; ?>vendor/font-awesome/fonts/roboto-slab.css" rel="stylesheet" type="text/css">
 
     	<link href="<?php echo BASE; ?>css/agency.min.css" rel="stylesheet">
+    	<link href="<?php echo BASE; ?>css/jquery.dataTables.min.css" rel="stylesheet">
 	</head>
 	<body id="page-top" style="background:#f1f1f1;">
 		
