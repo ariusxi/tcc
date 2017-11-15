@@ -28,10 +28,12 @@ $(function(){
 	var animating;
 	var numitems = 1;
 	var step = 1;
+	var atual = "";
 	var categoria = "";
 	var subcategoria = "";
 	var menu = false;
 	var cadastro = false;
+	var motorista = false;
 
 	function getAnuncios(){
 		$.ajax({
@@ -230,6 +232,10 @@ $(function(){
 		var email = localStorage.getItem("email");
 		var largura = $(document).width();
 
+		if(atual == page){
+			return false;
+		}
+
 		var perfil = "";
 		if(localStorage.getItem("level") == 0){
 			perfil += '<div class="details-profile">';
@@ -267,6 +273,10 @@ $(function(){
 			$(".menu-side").show();
 		}
 
+		cadastro = false;
+		motorista = false;
+
+
 		$.ajax({
 			type: 'POST',
 			url: url+'sys/Anuncio/categorias',
@@ -286,6 +296,8 @@ $(function(){
 				console.log(e);
 			}
 		});
+
+		atual = page;
 
 		return false;
 	});
@@ -470,6 +482,16 @@ $(function(){
 
 	$(".anuncios").ready(function(){
 		getAnuncios();
+	});
+
+	$(document).on("click", ".motorista", function(){
+		if(motorista == false){
+			$(".cadastro").slideDown();
+			motorista = true;
+		}else{
+			$(".cadastro").slideUp();
+			motorista = false;
+		}
 	});
 
 	$(document).on("click", ".veiculo", function(){
@@ -744,6 +766,83 @@ $(function(){
 				console.log(e);
 			}
 		});
+
+		return false;
+	});
+
+	$(document).on("submit", "#motorista", function(e){
+		e.preventDefault();
+
+		var firstname = $("#firstname").val();
+		var lastname = $("#lastname").val();
+		var rg = $("#rg").val();
+		var oe = $("#oe").val();
+		var cpf = $("#cpf").val();
+		var nregistro = $("#nregistro").val();
+		var cathab = $("#cathab").val();
+		var validade = $("#validade").val();
+
+		if(firstname == "" || lastname == "" || rg == "" || oe == "" || cpf == "" || nregistro == "" || cathab == "" || validade == ""){
+			$("#feedback").html("<div style='color:red;'>Voce deve preencher todos os campos obrigatórios</div>");
+			hidemessage("#feedback");
+			return false;
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Motorista/register',
+			dataType: 'json',
+			data: {
+				firstname: firstname,
+				lastname: lastname,
+				rg: rg,
+				oe: oe,
+				cpf: cpf,
+				nregistro: nregistro,
+				cathab: cathab,
+				validade: validade
+			}, success: function(retorno){
+				console.log(retorno);
+				if(retorno == false){
+					$("#feedback").html("<div style='color:red;'>Ocorreu um erro, tente novamente mais tarde</div>");
+					hidemessage("#feedback");
+				}else if(retorno == "existe"){
+					$("#feedback").html("<div style='color:red;'>Já existe um motorista cadastrado com esses dados</div>");
+					hidemessage("#feedback");
+				}else{
+					var num = $(".motoristas li").length;
+
+					$("#feedback").html("<div style='color:green;'>Veiculo cadastrado com sucesso</div>");
+					$(".cadastro").slideUp();
+					var html = "<li class='motorista_"+retorno.results+"'>";
+						html += '<div class="icon"><i class="fa fa-user" aria-hidden="true"></i></div>';
+						html += '<div class="details">';
+						html += '<strong><label>'+firstname+' '+lastname+'</label></strong>';
+						html += '<p>';
+						html += 'RG: '+rg+'<br>';
+						html += 'OE: '+oe+'<br>';
+						html += 'CPF: '+cpf+'<br>';
+						html += 'Nº Registro: '+nregistro+'<br>';
+						html += 'Categoria da Carteira: '+cathab+'<br>';
+						html += 'Validade: '+validade+'<br>';
+						html += '</p>';
+						html += '</div>';
+						html += '<a class="delete" id="'+retorno.results+'"><i class="fa fa-trash-o" aria-hidden="true"></i></a>';
+						html += "</li>";
+
+					if(num == 0){
+						html = "<ul class='list-items'>"+html+"</ul>";
+						$(".motoristas").html(html);
+					}else{
+						$(".motoristas ul").append(html);
+					}
+
+					motorista = false;
+				}
+			}, error: function(e){
+				console.log(e);
+			}
+		})
 
 		return false;
 	});

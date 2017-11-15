@@ -2,6 +2,7 @@
 	class Veiculo extends BD{
 
 		private static function checkExist($placa){
+			session_start();
 			$pdo = @BD::conn();
 
 			$select = $pdo->prepare("SELECT * FROM veiculo WHERE placa = '".$placa."' AND id_user = '".$_SESSION['id_user']."'");
@@ -41,9 +42,6 @@
 
 				return $arr;
 			}else{
-				$fetch = $select->fetchObject();
-
-				$arr['results'] = $fetch->id;
 				return false;
 			}
 		}
