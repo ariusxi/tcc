@@ -15,6 +15,7 @@
 		<div class="logo">Papum Transportes</div>
 		<div class="img-profile">
 			<img src="http://alt.rampages.us/wp-content/uploads/2017/08/default-profile-pic.jpg"/>
+			<div class="name"><?= $logado->firstname; ?></div>
 		</div>
 		<div class="menu">
 			<ul>
@@ -63,6 +64,9 @@
 							<?php } ?>
 						</div>
 						<a class='btn btn-primary btn-xl page' id='edit'>Editar Perfil</a>
+						<?php if($logado->level == 1){ ?>
+						<a class='btn btn-primary btn-xl page' id='frete'>Configuração de Frete</a>
+						<?php } ?>
 					</div>
 				</div>
 			</div>

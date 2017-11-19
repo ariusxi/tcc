@@ -5,12 +5,6 @@
 		$dataquery = @BD::conn()->prepare("SELECT * FROM users WHERE id = ?");
 		$dataquery->execute([$_SESSION['id_user']]);
 		$logado = $dataquery->fetchObject();
-
-		if(isset($_GET['sair'])){
-			unset($_SESSION['id_user']);
-			session_destroy();
-			echo "<script>location.href='".BASE."';</script>";
-		}
 	}
 	$col = "";
 	$name = "";
@@ -84,7 +78,7 @@
 						</div>
 						<div class="col-md-12" id="feedback"></div>
 						<div class="col-md-12">
-							<button class='submit' input='submit'>Editar</button>
+							<button class='submit' type='submit'>Editar</button>
 						</div>
 					</div>
 				</form>

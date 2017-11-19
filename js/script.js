@@ -237,6 +237,7 @@ $(function(){
 		}
 
 		var perfil = "";
+		var button = "";
 		if(localStorage.getItem("level") == 0){
 			perfil += '<div class="details-profile">';
 			perfil += '<h3>'+localStorage.getItem("fullname")+'</h3>';
@@ -256,13 +257,21 @@ $(function(){
 			perfil += '<p>Celular: '+localStorage.getItem("celular")+'</p>';
 			perfil += '<p>Email: '+localStorage.getItem("email")+'</p>';
 			perfil += '</div>';
+
+			button = "<a class='btn btn-primary btn-xl page' id='frete' style='margin-left:10px'>Configuração de Frete</a>";
+		}
+
+		var get = "";
+		page = page.split("/");
+		if(page.length == 2){
+			get = "?anuncio="+page[1];
 		}
 
 		if(page == "profile"){
-			$(".perfil").html('<div class="container-fluid"><div class="row"><div class="col-md-12"><div class="card"><div class="profile">'+perfil+'<a class="btn btn-primary btn-xl page" id="edit">Editar Perfil</a></div></div></div><div class="col-md-12"><div class="card anuncios"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div></div></div></div>');
+			$(".perfil").html('<div class="container-fluid"><div class="row"><div class="col-md-12"><div class="card"><div class="profile">'+perfil+'<a class="btn btn-primary btn-xl page" id="edit">Editar Perfil</a>'+button+'</div></div></div><div class="col-md-12"><div class="card anuncios"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div></div></div></div>');
 			getAnuncios()
 		}else{
-			$(".perfil").load(url+'pages/'+page+'.php');
+			$(".perfil").load(url+'pages/'+page[0]+'.php'+get);
 		}
 
 		if(largura <= 1085){
@@ -541,6 +550,63 @@ $(function(){
 		return false;
 	});
 
+	$(document).on("submit", "#frete", function(e){
+		e.preventDefault();
+
+		var configuracao = [];
+		var gris = $("#gris").val();
+		var despacho = $("#despacho").val();
+		var tas = $("#tas").val();
+
+		var frete_peso_liquido = $(".frete_peso_liquido");
+		var frete_ad_valorem = $(".frete_ad_valorem");
+		var frete_peso_minimo = $(".frete_peso_liquido");
+
+		var item = 0;
+		for(var i = 0; i < 6; i++){
+			if(item == 30){
+				item = 50;
+			}else if(item == 50){
+				item += 50;
+			}else if(item == 100){
+				item = 999;
+			}else{
+				item += 10;
+			}
+
+			configuracao[i] = {
+				frete_peso_liquido: frete_peso_liquido[i].value,
+				frete_ad_valorem: frete_ad_valorem[i].value,
+				frete_peso_minimo: frete_peso_minimo[i].value,
+				km: item
+			}
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/User/frete',
+			dataType: 'json',
+			data: {
+				gris: gris,
+				despacho: despacho,
+				tas: tas,
+				configuracao: configuracao
+			}, success: function(retorno){
+				if(retorno == true){
+					$("#feedback").html("<div style='color:green;'>Configuração de Frete alterada com sucesso</div>");
+					hidemessage("#feedback");
+				}else{
+					$("#feedback").html("<div style='color:red;'>Ocorreu um erro, tente novamente mais tarde</div>");
+					hidemessage("#feedback");
+				}
+			}, error: function(retorno){
+				console.log(e);
+			}
+		});
+
+		return false;
+	});
+
 	$(".btn-cliente").click(function(e){
 		e.preventDefault();
 
@@ -732,8 +798,6 @@ $(function(){
 				}else{
 					var num = $(".veiculos li").length;
 
-					console.log(num);
-
 					$("#feedback").html("<div style='color:green;'>Veiculo cadastrado com sucesso</div>");
 					$(".cadastro").slideUp();
 					var html = "<li class='veiculo_"+retorno.results+"'>";
@@ -812,7 +876,7 @@ $(function(){
 				}else{
 					var num = $(".motoristas li").length;
 
-					$("#feedback").html("<div style='color:green;'>Veiculo cadastrado com sucesso</div>");
+					$("#feedback").html("<div style='color:green;'>Motorista cadastrado com sucesso</div>");
 					$(".cadastro").slideUp();
 					var html = "<li class='motorista_"+retorno.results+"'>";
 						html += '<div class="icon"><i class="fa fa-user" aria-hidden="true"></i></div>';
@@ -829,10 +893,10 @@ $(function(){
 						html += '</div>';
 						html += '<a class="delete" id="'+retorno.results+'"><i class="fa fa-trash-o" aria-hidden="true"></i></a>';
 						html += "</li>";
+						$(".motoristas").html(html);
 
 					if(num == 0){
 						html = "<ul class='list-items'>"+html+"</ul>";
-						$(".motoristas").html(html);
 					}else{
 						$(".motoristas ul").append(html);
 					}
@@ -847,4 +911,101 @@ $(function(){
 		return false;
 	});
 
+	$(document).on("submit", "#search", function(e){
+		e.preventDefault();
+
+		var search = $("input[name=search]").val();
+
+		if(search == ""){
+			$("#feedback").html("<div style='color:red;'>Você deve inserir uma pesquisa</div>");
+			hidemessage("#feedback");
+			return false;
+		}
+
+		$(".results").html('<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>');
+
+		$(".results").fadeIn();
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Anuncio/search',
+			dataType: 'json',
+			data: {
+				search: search
+			}, success: function(retorno){
+				if(retorno == false){
+					$(".results").html("<center><h4>Nenhum anúncio cadastrado</h4></center>");
+				}else{
+					var html = "<ul class='list-items'>";
+					$.each(retorno.results, function(i, value){
+						html += "<li>";
+						html += "<div class='icon'><i class='fa fa-truck' aria-hidden='true'></i></div>";
+						html += "<div class='details'>";
+						html += "<strong><a href='' class='page' id='view/"+value.id+"'>"+value.titulo+"</a></strong>";
+						html += "<p>";
+						html += "De "+value.cidade_r+", "+value.estado_e+" para "+value.cidade_e+", "+value.estado_e+"<br/>";
+						html += "Anúnciado em "+value.data;
+						html += "</p>";
+						html += "</div>";
+						html += "</li>";
+					});
+					html += "</ul>";
+					if(retorno.more == true){
+						html += "<button type='button' class='btn btn-default action-button more'>Carregar mais</button>";
+					}
+					$(".results").html(html);
+				}
+			}, error: function(e){
+				console.log(e);
+			}
+		})
+
+		return false;
+	});
+
+	$(document).on("click", ".more", function(){
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Anuncio/loadMore',
+			dataType: 'json',
+			success: function(retorno){
+				if(retorno.status == "ok"){
+					var html = "";
+					$.each(retorno.results, function(i, value){
+						html += "<li>";
+						html += "<div class='icon'><i class='fa fa-truck' aria-hidden='true'></i></div>";
+						html += "<div class='details'>";
+						html += "<strong><a href='' class='page' id='view/"+value.id+"'>"+value.titulo+"</a></strong>";
+						html += "<p>";
+						html += "De "+value.cidade_r+", "+value.estado_e+" para "+value.cidade_e+", "+value.estado_e+"</br>";
+						html += "Anúnciado em "+value.data;
+						html += "</p>";
+						html += "</div>";
+						html += "</li>";
+					});
+					if(retorno.more == false){
+						$(".more").hide();
+					}
+					$(".results ul").append(html);
+				}
+			}
+		});
+	});
+
+	$(document).on("click", ".proposta", function(){
+		var anuncio = $(this).attr("id");
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Anuncio/define',
+			dataType: 'json',
+			data: {
+				anuncio: anuncio
+			}, success: function(){
+				$(".perfil").load(url+'pages/proposta.php');
+			}
+		});
+	});
+
 });
+

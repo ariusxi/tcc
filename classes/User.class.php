@@ -1,6 +1,30 @@
 <?php
 	class User extends BD{
 
+		private static function atualizaConfiguracao($configuracoes){
+			$pdo = @BD::conn();
+
+			$status = false;
+			$querys = array();
+			foreach($configuracoes as $key => $configuracao){
+				$querys[] = "UPDATE configuracao_frete_condicoes SET frete_peso_liquido = '".$configuracao['frete_peso_liquido']."', frete_ad_valorem = '".$configuracao['frete_ad_valorem']."', frete_peso_minimo = '".$configuracao['frete_peso_minimo']."' WHERE id_configuracao = '".$_SESSION['id_configuracao']."' AND frete_km = '".$configuracao['km']."'";
+
+				$dataquery = $pdo->prepare("UPDATE configuracao_frete_condicoes SET frete_peso_liquido = :frete_peso_liquido, frete_ad_valorem = :frete_ad_valorem, frete_peso_minimo = :frete_peso_minimo WHERE id_configuracao = :id_configuracao AND frete_km = :frete_km");
+				$dataquery->bindParam(":frete_peso_liquido", $parameters['frete_peso_liquido']);
+				$dataquery->bindParam(":frete_ad_valorem", $parameters['frete_ad_valorem']);
+				$dataquery->bindParam(":frete_peso_minimo", $parameters['frete_peso_minimo']);
+				$dataquery->bindParam(":id_configuracao", $_SESSION['id_configuracao']);
+				$dataquery->bindParam(":frete_km", $parameters['km']);
+				if($dataquery->execute()){
+					$status = true;
+				}else{
+					$status = false;
+				}
+			}
+
+			return $status;
+		}
+
 		private static function verifyUser($cpf, $email){
 			$pdo = @BD::conn();
 
@@ -26,6 +50,9 @@
 			if($dataquery->rowCount() > 0){
 				session_start();
 				$fetch = $dataquery->fetchObject();
+				$select = $pdo->prepare("SELECT id FROM configuracao_frete WHERE id_user = ?");
+				$select->execute(array($fetch->id));
+				$config = $select->fetchObject();
 				if($fetch->level == 0){
 					$arr["results"] = array(
 						"fullname" => $fetch->firstname." ".$fetch->lastname,
@@ -38,6 +65,7 @@
 						"level" => $fetch->level
 					);
 				}else{
+					$_SESSION['id_configuracao'] = $config->id;
 					$arr['results'] = array(
 						"fullname" => $fetch->firstname,
 						"razao" => $fetch->lastname,
@@ -138,7 +166,54 @@
 			$dataquery->bindParam(":password", $parameters['password']);
 			$dataquery->bindParam("level", $parameters['level']);
 			if($dataquery->execute()){
+				$select = $pdo->prepare("SELECT id FROM users WHERE cpf = ? AND email = ?");
+				$select->execute(array($parameters['cnpj'], $parameters['email']));
+				$user = $select->fetchObject();
+
+				$insert = $pdo->prepare("INSERT INTO configuracao_frete(id_user, gris, despacho, tas) VALUES (?,0,0,0)");
+				$insert->execute(array($user->id));
+
+				$select = $pdo->prepare("SELECT id FROM configuracao_frete WHERE id_user = ?");
+				$select->execute(array($user->id));
+				$config = $select->fetchObject();
+
+				$item = 0;
+				for($i = 0; $i < 6; $i++){
+					if($item == 30){
+						$item = 50;
+					}else if($item == 50){
+						$item += 50;
+					}else if($item == 100){
+						$item = 999;
+					}else{
+						$item += 10;
+					}
+
+					$insert = $pdo->prepare("INSERT INTO configuracao_frete_condicoes(id_configuracao,frete_peso_liquido,frete_ad_valorem,frete_peso_minimo,	frete_km) VALUES(?,0,0,0,?)");
+					$insert->execute(array($config->id, $item));
+				}
 				return true;
+			}else{
+				return false;
+			}
+		}
+
+		public function freteAction($parameters = array()){
+			session_start();
+			$pdo = parent::conn();
+
+			$dataquery = $pdo->prepare("UPDATE configuracao_frete SET gris = :gris, despacho = :despacho, tas = :tas WHERE id_user = :id_user");
+			$dataquery->bindParam(":gris", $parameters['gris']);
+			$dataquery->bindParam(":despacho", $parameters['despacho']);
+			$dataquery->bindParam(":tas", $parameters['tas']);
+			$dataquery->bindParam(":id_user", $_SESSION['id_user']);
+			if($dataquery->execute()){
+				$status = User::atualizaConfiguracao($parameters['configuracao']);
+				if($status == true){
+					return true;
+				}else{
+					return false;
+				}
 			}else{
 				return false;
 			}

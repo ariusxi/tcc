@@ -87,7 +87,7 @@
 			session_start();
 			$pdo = parent::conn();
 
-			$dataquery = $pdo->prepare("INSERT INTO cargas(id_user, titulo, categoria, subcategoria, cep_r, rua_r, numero_r, bairro_r, cidade_r, estado_r, cep_e, rua_e, numero_e, bairro_e, cidade_e, estado_e, status, created_at) VALUES(:id_user,:titulo,:categoria,:subcategoria,:cep_r,:rua_r,:numero_r,:bairro_r,:cidade_r,:estado_r,:cep_e,:rua_e,:numero_e,:bairro_e,:cidade_e,:estado_e,0,NOW())");
+			$dataquery = $pdo->prepare("INSERT INTO cargas(id_user, titulo, categoria, subcategoria, cep_r, rua_r, numero_r, bairro_r, cidade_r, estado_r, cep_e, rua_e, numero_e, bairro_e, cidade_e, estado_e, descricao, status, created_at) VALUES(:id_user,:titulo,:categoria,:subcategoria,:cep_r,:rua_r,:numero_r,:bairro_r,:cidade_r,:estado_r,:cep_e,:rua_e,:numero_e,:bairro_e,:cidade_e,:estado_e,:descricao,0,NOW())");
 			$dataquery->bindParam(':id_user', $_SESSION['id_user']);
 			$dataquery->bindParam(':titulo', $parameters['titulo']);
 			$dataquery->bindParam(':categoria', $parameters['categoria']);
@@ -104,6 +104,7 @@
 			$dataquery->bindParam(':bairro_e', $parameters['bairro_e']);
 			$dataquery->bindParam(':cidade_e', $parameters['cidade_e']);
 			$dataquery->bindParam(':estado_e', $parameters['estado_e']);
+			$dataquery->bindParam(':descricao', $parameters['descricao']);
 			if($dataquery->execute()){
 				$select = $pdo->prepare("SELECT id FROM cargas WHERE id_user = ? AND cep_r = ? AND cep_e = ? AND created_at = NOW()");
 				$select->execute([$_SESSION['id_user'], $parameters['cep_r'], $parameters['cep_e']]);
@@ -185,6 +186,149 @@
 						);
 						$ids[] = $fetch->id;
 					}
+				}
+
+				return $arr;
+			}else{
+				return false;
+			}
+		}
+
+		public function searchAction($parameters = array()){
+			session_start();
+			$pdo = parent::conn();
+			$arr = array("status" => "ok", "results" => array(), "more" => false);
+			$_SESSION['pesquisa'] = $parameters['search'];
+			$_SESSION['ids_carregados'] = array();
+
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%'");
+			$dataquery->execute();
+			if($dataquery->rowCount() > 5){
+				$arr["more"] = true;
+			}
+
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%' ORDER BY id LIMIT 5");
+			$dataquery->execute();
+			if($dataquery->rowCount() > 0){
+				while($fetch = $dataquery->fetchObject()){
+					$arr["results"][] = array(
+						"id" => $fetch->id,
+						"titulo" => $fetch->titulo,
+						"cidade_r" => $fetch->cidade_r,
+						"cidade_e" => $fetch->cidade_e,
+						"estado_r" => $fetch->estado_r,
+						"estado_e" => $fetch->estado_e,
+						"data" => date("d/m/Y H:i:s", strtotime($fetch->created_at))
+					);
+					$_SESSION['ids_carregados'][] = $fetch->id;
+				}
+				return $arr;
+			}else{
+				return false;
+			}
+		}
+
+		public function loadMoreAction($parameters = array()){
+			session_start();
+			$pdo = parent::conn();
+			$arr = array("status" => "ok", "results" => array(), "more" => false);
+			$implode_ids = implode(",", $_SESSION['ids_carregados']);
+			$parameters['search'] = $_SESSION['pesquisa'];
+
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE (titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%') AND id NOT IN($implode_ids)");
+			$dataquery->execute();
+			if($dataquery->rowCount() > 5){
+				$arr["more"] = true;
+			}
+
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE (titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%') AND id NOT IN($implode_ids) ORDER BY id LIMIT 5");
+			$dataquery->execute();
+			if($dataquery->rowCount() > 0){
+				while($fetch = $dataquery->fetchObject()){
+					$arr["results"][] = array(
+						"id" => $fetch->id,
+						"titulo" => $fetch->titulo,
+						"cidade_r" => $fetch->cidade_r,
+						"cidade_e" => $fetch->cidade_e,
+						"estado_r" => $fetch->estado_r,
+						"estado_e" => $fetch->estado_e,
+						"data" => date("d/m/Y H:i:s", strtotime($fetch->created_at))
+					);
+					$_SESSION['ids_carregados'][] = $fetch->id;
+				}
+
+				return $arr;
+			}else{
+				return false;
+			}
+		}
+
+		public function viewAction($parameters = array()){
+			$pdo = parent::conn();
+			$arr = array("status" => "ok", "results" => array());
+
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE id = :id AND status = 0");
+			$dataquery->bindParam(":id", $parameters['anuncio']);
+			$dataquery->execute();
+			if($dataquery->rowCount() > 0){
+				while($fetch = $dataquery->fetchObject()){
+					$arr['results'][] = array(
+						"id" => $fetch->id,
+						"titulo" => $fetch->titulo,
+						"cidade_r" => $fetch->cidade_r,
+						"estado_r" => $fetch->estado_r,
+						"cidade_e" => $fetch->cidade_e,
+						"estado_e" => $fetch->estado_e,
+						"descricao" => $fetch->descricao,
+						"data" => $fetch->created_at
+					);
+				}
+				return $arr;
+			}else{
+				return false;
+			}
+		}
+
+		public function defineAction($parameters = array()){
+			session_start();
+			$_SESSION['anuncio'] = $parameters['anuncio'];
+		}
+
+		public function anuncioAction($parameters = array()){
+			session_start();
+			$pdo = parent::conn();
+			$arr = array("status" => "ok", "results" => array());
+
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE id = :id");
+			$dataquery->bindParam(":id", $_SESSION['anuncio']);
+			$dataquery->execute();
+			if($dataquery->rowCount() > 0){
+				$fetch = $dataquery->fetchObject();
+				$arr["results"][0] = array(
+					"id" => $fetch->id,
+					"titulo" => $fetch->titulo,
+					"rua_r" => $fetch->rua_r,
+					"numero_r" => $fetch->numero_r,
+					"bairro_r" => $fetch->bairro_r,
+					"cidade_r" => $fetch->cidade_r,
+					"estado_r" => $fetch->estado_r,
+					"rua_e" => $fetch->rua_e,
+					"numero_e" => $fetch->numero_e,
+					"bairro_e" => $fetch->bairro_e,
+					"cidade_e" => $fetch->cidade_e,
+					"estado_e" => $fetch->estado_e,
+					"itens" => array(),
+					"retirada" => "",
+					"entrega" => ""
+				);
+
+				$select = $pdo->prepare("SELECT nome, quantidade FROM items_cargas WHERE id_cargas = ?");
+				$select->execute(array($fetch->id));
+				while($item = $select->fetchObject()){
+					$arr["results"][0]['itens'][] = array(
+						"nome" => $item->nome,
+						"quantidade" => $item->quantidade
+					);
 				}
 
 				return $arr;

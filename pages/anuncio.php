@@ -14,9 +14,9 @@
 					<h2 class="fs-title">Escolha uma categoria</h2>
 					<div class='categorias'>
 						<div class="spinner">
-						  <div class="bounce1"></div>
-						  <div class="bounce2"></div>
-						  <div class="bounce3"></div>
+						  	<div class="bounce1"></div>
+						 	<div class="bounce2"></div>
+						  	<div class="bounce3"></div>
 						</div>
 					</div>
 					<input type="button" name="next" class="next action-button" value="Próximo" />
@@ -142,6 +142,10 @@
 						<div class="col-md-12" id="feedback">
 							
 						</div>
+						<div class="col-md-12">
+							<label>Descrição do Anúncio</label>
+							<textarea id="descricao" class="form-control input-md" placeholder="Descrição do Anúncio"></textarea>
+						</div>
 					</div>
 					<input type="button" name="previous" class="previous action-button" value="Anterior" />
 					<input type="submit" name="submit" class="submit action-button" value="Anunciar" />
@@ -180,6 +184,7 @@
 			var bairro_e = $("#bairro_r").val();
 			var cidade_e = $("#cidade_r").val();
 			var estado_e = $("#estado_r").val();
+			var descricao = $("#descricao").val();
 
 			var categoria = parseInt($("input[name=categoria]:checked").val());
 			var subcategoria = parseInt($("input[name=subcategoria]:checked").val());
@@ -216,7 +221,8 @@
 					cidade_e: cidade_e,
 					estado_e: estado_e,
 					categoria: categoria,
-					subcategoria: subcategoria
+					subcategoria: subcategoria,
+					descricao: descricao
 				}, success: function(retorno){
 					console.log(retorno);
 					if(retorno == true){

@@ -2,7 +2,6 @@
 	class Motorista extends BD{
 
 		private static function checkExist($cpf, $rg){
-			session_start();
 			$pdo = @BD::conn();
 
 			$select = $pdo->prepare("SELECT * FROM motorista WHERE (cpf = '".$cpf."' OR rg = '".$rg."') AND id_user = '".$_SESSION['id_user']."'");
