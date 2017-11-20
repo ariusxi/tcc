@@ -341,8 +341,11 @@
 			session_start();
 			$pdo = parent::conn();
 
+			// Mostrar erros do PHP PDO
+			// $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 			$dataquery = $pdo->prepare("INSERT INTO proposta(id_cargas, id_usuario, peso_total, peso_tabela, valor_total, valor_tabela, tas, despacho, pedagio, lance_inicial, lance_minimo, info_cliente, termo_condicoes, created_at) VALUES(:id_cargas, :id_usuario, :peso_total, :peso_tabela, :valor_total, :valor_tabela, :tas, :despacho, :pedagio, :lance_inicial, :lance_minimo, :info_cliente, :termo_condicoes, NOW())");
-			$dataquery->bindParam(":id_cargas", $_SESSION['anuncio']);
+			$dataquery->bindParam(":id_cargas", $parameters['anuncio']);
 			$dataquery->bindParam(":id_usuario", $_SESSION['id_user']);
 			$dataquery->bindParam(":peso_total", $parameters['peso_total']);
 			$dataquery->bindParam(":peso_tabela", $parameters['peso_tabela']);

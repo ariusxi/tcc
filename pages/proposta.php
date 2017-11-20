@@ -162,10 +162,19 @@
 					</div>
 					<div class="col-md-12" id="feedback"></div>
 					<div class="col-md-12">
+						<input type="hidden" id="anuncio" value="<?= $_SESSION['anuncio']; ?>">
 						<button class='submit proposta'>Fazer proposta</button>
 					</div>
 				</div>
 			</form>
+		</div>
+		<div class="success card" style="display:none;">
+			<div class="row">
+				<div class="col-md-12">
+					<h4>Proposta enviada</h4>
+					<p>Sua proposta foi enviada, caso ela seja aceita voce será notificado em seu perfil</p>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

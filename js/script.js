@@ -42,6 +42,7 @@ $(function(){
 			url: url+'sys/Anuncio/carregar',
 			dataType: 'json',
 			success: function(retorno){
+				console.log(retorno);
 				if(retorno.status == "ok"){
 					var html = "<h3>Anúncios Pendentes</h3><table class='table'>";
 					html += "<thead class='small-text'><tr><th>#</th><th>Titulo</th><th>Data de Anúncio</th><th>Categoria</th><th>Subcategoria</th><th>Ações</th></tr></thead><tbody>";
@@ -270,7 +271,7 @@ $(function(){
 
 		if(page == "profile"){
 			$(".perfil").html('<div class="container-fluid"><div class="row"><div class="col-md-12"><div class="card"><div class="profile">'+perfil+'<a class="btn btn-primary btn-xl page" id="edit">Editar Perfil</a>'+button+'</div></div></div><div class="col-md-12"><div class="card anuncios"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div></div></div></div>');
-			getAnuncios()
+			getAnuncios();
 		}else{
 			$(".perfil").load(url+'pages/'+page[0]+'.php'+get);
 		}
@@ -1032,6 +1033,7 @@ $(function(){
 		var lance_minimo = $("#lance_minimo").val();
 		var info_cliente = $("#info_cliente").val();
 		var termo_condicoes = $("#termo_condicoes").val();
+		var anuncio = $("#anuncio").val();
 
 		if(ajuste == false){
 			peso_total = 0;
@@ -1063,13 +1065,16 @@ $(function(){
 				lance_inicial: lance_inicial,
 				lance_minimo,
 				info_cliente: info_cliente,
-				termo_condicoes: termo_condicoes
+				termo_condicoes: termo_condicoes,
+				anuncio: anuncio
 			}, success: function(retorno){
 				console.log(retorno);
 				if(retorno == true){
-
+					$(".proposta").hide();
+					$(".success").fadeIn();
 				}else{
-
+					$("#feedback").html("<div style='color:red;'>Ocorreu um erro, tente novamente mais tarde</div>");
+					hidemessage("#feedback");
 				}
 			}, error: function(e){
 				console.log(e);
