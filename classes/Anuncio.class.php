@@ -280,7 +280,7 @@
 						"cidade_e" => $fetch->cidade_e,
 						"estado_e" => $fetch->estado_e,
 						"descricao" => $fetch->descricao,
-						"data" => $fetch->created_at
+						"data" => date("d/m/Y H:i:s", strtotime($fetch->created_at))
 					);
 				}
 				return $arr;
@@ -332,6 +332,31 @@
 				}
 
 				return $arr;
+			}else{
+				return false;
+			}
+		}
+
+		public function propostaAction($parameters = array()){
+			session_start();
+			$pdo = parent::conn();
+
+			$dataquery = $pdo->prepare("INSERT INTO proposta(id_cargas, id_usuario, peso_total, peso_tabela, valor_total, valor_tabela, tas, despacho, pedagio, lance_inicial, lance_minimo, info_cliente, termo_condicoes, created_at) VALUES(:id_cargas, :id_usuario, :peso_total, :peso_tabela, :valor_total, :valor_tabela, :tas, :despacho, :pedagio, :lance_inicial, :lance_minimo, :info_cliente, :termo_condicoes, NOW())");
+			$dataquery->bindParam(":id_cargas", $_SESSION['anuncio']);
+			$dataquery->bindParam(":id_usuario", $_SESSION['id_user']);
+			$dataquery->bindParam(":peso_total", $parameters['peso_total']);
+			$dataquery->bindParam(":peso_tabela", $parameters['peso_tabela']);
+			$dataquery->bindParam(":valor_total", $parameters['valor_total']);
+			$dataquery->bindParam(":valor_tabela", $parameters['valor_tabela']);
+			$dataquery->bindParam(":tas", $parameters['tas']);
+			$dataquery->bindParam(":despacho", $parameters['despacho']);
+			$dataquery->bindParam(":pedagio", $parameters['pedagio']);
+			$dataquery->bindParam(":lance_inicial", $parameters['lance_inicial']);
+			$dataquery->bindParam(":lance_minimo", $parameters['lance_minimo']);
+			$dataquery->bindParam(":info_cliente", $parameters['info_cliente']);
+			$dataquery->bindParam(":termo_condicoes", $parameters['termo_condicoes']);
+			if($dataquery->execute()){
+				return true;
 			}else{
 				return false;
 			}

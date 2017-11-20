@@ -34,6 +34,7 @@ $(function(){
 	var menu = false;
 	var cadastro = false;
 	var motorista = false;
+	var ajuste = false;
 
 	function getAnuncios(){
 		$.ajax({
@@ -1005,6 +1006,77 @@ $(function(){
 				$(".perfil").load(url+'pages/proposta.php');
 			}
 		});
+	});
+
+	$(document).on('click', ".mostrar-ajuste", function(){
+  		if(ajuste == false){
+  			$(".ajuste").slideDown();
+  			ajuste = true;
+  		}else{
+  			$(".ajuste").slideUp();
+  			ajuste = false;
+  		}
+  	});
+
+	$(document).on("submit", "#proposta", function(e){
+		e.preventDefault();
+
+		var peso_total = $("#peso_total").val();
+		var peso_tabela = $("#peso_tabela").val();
+		var valor_total = $("#valor_total").val();
+		var valor_tabela = $("#valor_tabela").val();
+		var tas = $("#tas").val();
+		var despacho = $("#despacho").val();
+		var pedagio = $("#pedagio").val();
+		var lance_inicial = $("#lance_inicial").val();
+		var lance_minimo = $("#lance_minimo").val();
+		var info_cliente = $("#info_cliente").val();
+		var termo_condicoes = $("#termo_condicoes").val();
+
+		if(ajuste == false){
+			peso_total = 0;
+			peso_tabela = 0;
+			valor_total = 0;
+			valor_tabela = 0;
+			tas = 0;
+			despacho = 0;
+			pedagio = 0;
+		}
+
+		if(lance_inicial == "" || lance_minimo == "" || info_cliente == "" || termo_condicoes == ""){
+			$("#feedback").html("<div style='color:red;'>Voce deve preencher os campos obrigatórios</div>");
+			hidemessage("#feedback");
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Anuncio/proposta',
+			dataType: 'json',
+			data: {
+				peso_total: peso_total,
+				peso_tabela: peso_tabela,
+				valor_total: valor_total,
+				valor_tabela: valor_tabela,
+				tas: tas,
+				despacho: despacho,
+				pedagio: pedagio,
+				lance_inicial: lance_inicial,
+				lance_minimo,
+				info_cliente: info_cliente,
+				termo_condicoes: termo_condicoes
+			}, success: function(retorno){
+				console.log(retorno);
+				if(retorno == true){
+
+				}else{
+
+				}
+			}, error: function(e){
+				console.log(e);
+			}
+		});
+
+		return false;
 	});
 
 });
