@@ -205,13 +205,13 @@
 			$_SESSION['pesquisa'] = $parameters['search'];
 			$_SESSION['ids_carregados'] = array();
 
-			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%'");
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%' AND status = 0");
 			$dataquery->execute();
 			if($dataquery->rowCount() > 5){
 				$arr["more"] = true;
 			}
 
-			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%' ORDER BY id LIMIT 5");
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%' AND status = 0 ORDER BY id LIMIT 5");
 			$dataquery->execute();
 			if($dataquery->rowCount() > 0){
 				while($fetch = $dataquery->fetchObject()){
@@ -239,13 +239,13 @@
 			$implode_ids = implode(",", $_SESSION['ids_carregados']);
 			$parameters['search'] = $_SESSION['pesquisa'];
 
-			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE (titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%') AND id NOT IN($implode_ids)");
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE (titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%') AND id NOT IN($implode_ids) AND status = 0");
 			$dataquery->execute();
 			if($dataquery->rowCount() > 5){
 				$arr["more"] = true;
 			}
 
-			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE (titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%') AND id NOT IN($implode_ids) ORDER BY id LIMIT 5");
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE (titulo LIKE '%".$parameters['search']."%' OR rua_r LIKE '%".$parameters['search']."%' OR bairro_r LIKE '%".$parameters['search']."%' OR cidade_r  LIKE '%".$parameters['search']."%' OR rua_e LIKE '%".$parameters['search']."%' OR bairro_e LIKE '%".$parameters['search']."%' OR cidade_e LIKE '%".$parameters['search']."%') AND id NOT IN($implode_ids) AND status = 0 ORDER BY id LIMIT 5");
 			$dataquery->execute();
 			if($dataquery->rowCount() > 0){
 				while($fetch = $dataquery->fetchObject()){
