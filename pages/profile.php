@@ -15,7 +15,11 @@
 		<div class="logo">Papum Transportes</div>
 		<div class="img-profile">
 			<img src="http://alt.rampages.us/wp-content/uploads/2017/08/default-profile-pic.jpg"/>
+			<?php if($logado->level == 0){ ?>
+			<div class="name"><?= $logado->firstname." ".$logado->lastname; ?></div>
+			<?php }else{ ?>
 			<div class="name"><?= $logado->firstname; ?></div>
+			<?php } ?>
 		</div>
 		<div class="menu">
 			<ul>

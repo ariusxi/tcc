@@ -29,19 +29,23 @@
 			session_start();
 			$pdo = parent::conn();
 			$arr = array("status" => "ok", "results" => array());
+			$ids_carregados = array();
 
 			$dataquery = $pdo->prepare("SELECT cargas.id, cargas.titulo, cargas.created_at,categorias.categoria, subcategorias.subcategoria FROM cargas INNER JOIN categorias ON cargas.categoria = categorias.id INNER JOIN subcategorias ON subcategorias.id = cargas.id WHERE cargas.id_user = :id_user AND cargas.status = 0");
 			$dataquery->bindParam(":id_user", $_SESSION['id_user']);
 			$dataquery->execute();
 			if($dataquery->rowCount() > 0){
 				while($fetch = $dataquery->fetchObject()){
-					$arr["results"][] = array(
-						"id" => $fetch->id,
-						"titulo" => $fetch->titulo,
-						"created_at" => date("d/m/Y", strtotime($fetch->created_at)),
-						"categoria" => $fetch->categoria,
-						"subcategoria" => $fetch->subcategoria
-					);
+					if(!in_array($fetch->id, $ids_carregados)){
+						$arr["results"][] = array(
+							"id" => $fetch->id,
+							"titulo" => $fetch->titulo,
+							"created_at" => date("d/m/Y", strtotime($fetch->created_at)),
+							"categoria" => $fetch->categoria,
+							"subcategoria" => $fetch->subcategoria
+						);
+						$ids_carregados[] = $fetch->id;
+					}
 				}
 
 				return $arr;
@@ -87,7 +91,7 @@
 			session_start();
 			$pdo = parent::conn();
 
-			$dataquery = $pdo->prepare("INSERT INTO cargas(id_user, titulo, categoria, subcategoria, cep_r, rua_r, numero_r, bairro_r, cidade_r, estado_r, cep_e, rua_e, numero_e, bairro_e, cidade_e, estado_e, descricao, status, created_at) VALUES(:id_user,:titulo,:categoria,:subcategoria,:cep_r,:rua_r,:numero_r,:bairro_r,:cidade_r,:estado_r,:cep_e,:rua_e,:numero_e,:bairro_e,:cidade_e,:estado_e,:descricao,0,NOW())");
+			$dataquery = $pdo->prepare("INSERT INTO cargas(id_user, titulo, categoria, subcategoria, cep_r, rua_r, numero_r, bairro_r, cidade_r, estado_r, cep_e, rua_e, numero_e, bairro_e, cidade_e, estado_e, descricao, status, proposta, created_at) VALUES(:id_user,:titulo,:categoria,:subcategoria,:cep_r,:rua_r,:numero_r,:bairro_r,:cidade_r,:estado_r,:cep_e,:rua_e,:numero_e,:bairro_e,:cidade_e,:estado_e,:descricao,0,0,NOW())");
 			$dataquery->bindParam(':id_user', $_SESSION['id_user']);
 			$dataquery->bindParam(':titulo', $parameters['titulo']);
 			$dataquery->bindParam(':categoria', $parameters['categoria']);
@@ -344,7 +348,7 @@
 			// Mostrar erros do PHP PDO
 			// $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-			$dataquery = $pdo->prepare("INSERT INTO proposta(id_cargas, id_usuario, peso_total, peso_tabela, valor_total, valor_tabela, tas, despacho, pedagio, lance_inicial, lance_minimo, info_cliente, termo_condicoes, created_at) VALUES(:id_cargas, :id_usuario, :peso_total, :peso_tabela, :valor_total, :valor_tabela, :tas, :despacho, :pedagio, :lance_inicial, :lance_minimo, :info_cliente, :termo_condicoes, NOW())");
+			$dataquery = $pdo->prepare("INSERT INTO proposta(status, id_cargas, id_usuario, peso_total, peso_tabela, valor_total, valor_tabela, tas, despacho, pedagio, lance_inicial, lance_minimo, info_cliente, termo_condicoes, created_at) VALUES(0, :id_cargas, :id_usuario, :peso_total, :peso_tabela, :valor_total, :valor_tabela, :tas, :despacho, :pedagio, :lance_inicial, :lance_minimo, :info_cliente, :termo_condicoes, NOW())");
 			$dataquery->bindParam(":id_cargas", $parameters['anuncio']);
 			$dataquery->bindParam(":id_usuario", $_SESSION['id_user']);
 			$dataquery->bindParam(":peso_total", $parameters['peso_total']);
@@ -360,6 +364,57 @@
 			$dataquery->bindParam(":termo_condicoes", $parameters['termo_condicoes']);
 			if($dataquery->execute()){
 				return true;
+			}else{
+				return false;
+			}
+		}
+
+		public function propostasAction($parameters = array()){
+			session_start();
+			$pdo = parent::conn();
+			$arr = array("status" => "ok", "results" => array());
+
+			$dataquery = $pdo->prepare("SELECT p.*, c.titulo FROM proposta AS p INNER JOIN cargas AS c ON p.id_cargas = c.id INNER JOIN users AS u ON c.id_user = u.id WHERE u.id = :id_user");
+			$dataquery->bindParam(":id_user", $_SESSION['id_user']);
+			$dataquery->execute();
+			if($dataquery->rowCount() > 0){
+				while($fetch = $dataquery->fetchObject()){
+					$select = $pdo->prepare("SELECT firstname FROM users WHERE id = ?");
+					$select->execute(array($fetch->id_usuario));
+					$transportadora = $select->fetchObject();
+
+					$arr["results"][] = array(
+						"id" => $fetch->id,
+						"id_transportadora" => $fetch->id_usuario,
+						"anuncio" => $fetch->titulo,
+						"nome_transportadora" => $transportadora->firstname,
+						"lance_minimo" => $fetch->lance_minimo,
+						"created_at" => date("d/m/Y H:i:s",strtotime($fetch->created_at))
+					);
+				}
+				return $arr;
+			}else{
+				return false;
+			}
+		}
+
+		public function respondePropostaAction($parameters = array()){
+			$pdo = parent::conn();
+
+			$dataquery = $pdo->prepare("UPDATE proposta SET status = :status WHERE id = :id");
+			$dataquery->bindParam(":status", $parameters['response']);
+			$dataquery->bindParam(":id", $parameters['proposta']);
+			if($dataquery->execute()){
+				$select = $pdo->prepare("SELECT id_cargas FROM proposta WHERE id = ?");
+				$select->execute(array($parameters['proposta']));
+				$proposta = $select->fetchObject();
+
+				$update = $pdo->prepare("UPDATE cargas SET status = 2, proposta = ? WHERE id = ?");
+				if($update->execute(array($parameters['proposta'], $proposta->id_cargas))){
+					return true;
+				}else{
+					return false;
+				}
 			}else{
 				return false;
 			}

@@ -42,7 +42,6 @@ $(function(){
 			url: url+'sys/Anuncio/carregar',
 			dataType: 'json',
 			success: function(retorno){
-				console.log(retorno);
 				if(retorno.status == "ok"){
 					var html = "<h3>Anúncios Pendentes</h3><table class='table'>";
 					html += "<thead class='small-text'><tr><th>#</th><th>Titulo</th><th>Data de Anúncio</th><th>Categoria</th><th>Subcategoria</th><th>Ações</th></tr></thead><tbody>";
@@ -1082,6 +1081,42 @@ $(function(){
 		});
 
 		return false;
+	});
+
+	$(document).on("click", ".acao", function(){
+		var response = $(this).attr("id");
+		var proposta = $(this).parent().parent().parent().attr('class');
+		var div = $(this).parent().parent().parent(); 
+		proposta = proposta.split("_")[1];
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Anuncio/respondeProposta',
+			dataType: 'json',
+			data: {
+				response: response,
+				proposta: proposta
+			}, success: function(retorno){
+				if(retorno == true){
+					if(response == 1){
+						div.html("<center><h4>Proposta aceita com sucesso</h4></center>");
+					}else{
+						div.html("<center><h4>Proposta recusada com sucesso</h4></center>");
+					}
+					setTimeout(function(){
+						div.fadeOut();
+					}, 3000);
+					/*if($(".lances .list-items li").length == 1){
+						$(".lances").html("<center><h4>Nenhuma proposta recebida</h4></center>");
+					}*/
+				}else{
+					$("#feedback").html('<div style="color:red;">Ocorreu um erro, tente novamente mais tarde</div');
+					hidemessage("#feedback");
+				}
+			}, error: function(e){
+				console.log(e);
+			}
+		})
 	});
 
 });
