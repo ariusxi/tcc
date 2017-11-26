@@ -67,9 +67,9 @@
 							<p>Email: <?= $logado->email; ?></p>
 							<?php } ?>
 						</div>
-						<a class='btn btn-primary btn-xl page' id='edit'>Editar Perfil</a>
+						<a class='btn btn-primary btn-xl page setting' id='edit'>Editar Perfil</a>
 						<?php if($logado->level == 1){ ?>
-						<a class='btn btn-primary btn-xl page' id='frete'>Configuração de Frete</a>
+						<a class='btn btn-primary btn-xl page setting' id='frete'>Configuração de Frete</a>
 						<?php } ?>
 					</div>
 				</div>

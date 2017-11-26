@@ -2,6 +2,7 @@
 	<div class="row">
 		<div class="card">
 			<h3>Lances</h3>
+			<div id="feedback"></div>
 			<div class="lances">
 				<div class="spinner">
 				  	<div class="bounce1"></div>

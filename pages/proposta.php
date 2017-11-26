@@ -112,7 +112,7 @@
 						</div>
 					</div>
 					<div class="col-md-12">
-						<button class='btn btn-default action-button mostrar-ajuste'>Ajustar calculo</button>
+						<a class='btn btn-default action-button mostrar-ajuste'>Ajustar calculo</a>
 					</div>
 					<div class="col-md-4">
 						<label>

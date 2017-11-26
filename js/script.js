@@ -229,11 +229,11 @@ $(function(){
 
 	$(".menu-toggle").click(function(){
 		if(menu == false){
-			$(".menu-side").fadeIn();
+			$(".menu-side").animate({width:'toggle'},350);
 			$(this).html("<i class='fa fa-close'></i>");
 			menu = true;
 		}else{
-			$(".menu-side").fadeOut();
+			$(".menu-side").animate({width:'toggle'},350);
 			menu = false;
 			$(this).html("<i class='fa fa-reorder'></i>");
 		}
@@ -339,8 +339,12 @@ $(function(){
 			perfil += '<p>Email: '+localStorage.getItem("email")+'</p>';
 			perfil += '</div>';
 
-			button = "<a class='btn btn-primary btn-xl page' id='frete' style='margin-left:10px'>Configuração de Frete</a>";
+			button = "<a class='btn btn-primary btn-xl page setting' id='frete' style='margin-left:10px'>Configuração de Frete</a>";
 		}
+
+		var classes = $(this).attr('class');
+		classes = classes.split(" ");
+		classes = classes[4];
 
 		var get = "";
 		page = page.split("/");
@@ -355,12 +359,10 @@ $(function(){
 			$(".perfil").load(url+'pages/'+page[0]+'.php'+get);
 		}
 
-		if(largura <= 1085){
-			$(".menu-side").fadeOut();
+		if(largura <= 1085 && classes != "setting"){
+			$(".menu-side").animate({width:'toggle'},350);
 			$(".menu-toggle").html("<i class='fa fa-reorder'></i>");
 			menu = false;
-		}else{
-			$(".menu-side").show();
 		}
 
 		cadastro = false;
@@ -1159,7 +1161,6 @@ $(function(){
 				termo_condicoes: termo_condicoes,
 				anuncio: anuncio
 			}, success: function(retorno){
-				console.log(retorno);
 				if(retorno == true){
 					$(".proposta").hide();
 					$(".success").fadeIn();
@@ -1201,6 +1202,9 @@ $(function(){
 					/*if($(".lances .list-items li").length == 1){
 						$(".lances").html("<center><h4>Nenhuma proposta recebida</h4></center>");
 					}*/
+				}else if(retorno == 'already'){
+					$("#feedback").html('<div style="color:red;">Você já aceitou uma proposta para esse anúncio</div>');
+					hidemessage("#feedback");
 				}else{
 					$("#feedback").html('<div style="color:red;">Ocorreu um erro, tente novamente mais tarde</div');
 					hidemessage("#feedback");
@@ -1209,6 +1213,68 @@ $(function(){
 				console.log(e);
 			}
 		})
+	});
+
+	$(document).on("click", ".view-anuncio", function(){
+		var anuncio = $(this).attr("id");
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Anuncio/visualiza',
+			dataType: 'json',
+			data: {
+				anuncio: anuncio
+			}, success: function(retorno){
+				if(retorno == false){
+					$(".anuncio").html("<center><h4>Visualização do anúncio indisponível</h4></center>");
+				}else{
+					var html = "";
+					$.each(retorno.results, function(i, value){
+						html += "<h4>"+value.titulo+"</h4>";
+						html += "De "+value.cidade_r+", "+value.estado_r+" para "+value.cidade_e+", "+value.estado_e+"<br/>";
+						html += "<hr/>";
+						html += "<p>"+value.descricao+"</p>";
+						html += "<h5>Itens</h5>";
+						html += "<table class='striped items'><thead><tr><th>#</th><th>Nome</th><th>Quantidade</th></tr></thead><tbody>";
+						$.each(value.itens, function(n, item){
+							html += "<tr><td>"+(n+1)+"</td><td>"+item.nome+"</td><td>"+item.quantidade+"</td></tr>";
+						});
+						html += "</tbody></table>";
+						$.each(value.itens, function(n, item){
+  							$(".items tbody").append("<tr><td>"+(n+1)+"</td><td>"+item.nome+"</td><td>"+item.quantidade+"</td></tr>");
+  						});
+  						if(value.status == 2){
+  							html += "<hr/>";
+  							html += "<h5>Proposta aceita</h5>";
+  							html += "<ul class='list-items'>";
+  							html += "<li class='proposta_"+value.proposta.id+"'>";
+							html += '<div class="icon"><i class="fa fa-truck" aria-hidden="true"></i></div>';
+							html += '<div class="details">';
+							html += '<a href="" class="page" id="perfil/'+value.proposta.id+'"><strong>'+value.proposta.nome_transportadora+'</strong></a>';
+							html += '<p>';
+							html += 'Anúncio: '+value.proposta.anuncio+'<br/>';
+							html += 'Lance mínimo: R$'+value.proposta.lance_minimo+'<br/>';
+							html += 'Proposta feita em '+value.proposta.created_at+'<br/>';
+							html += '</p>';
+							html += '</div>';
+							html += '<a class="view" id="'+value.proposta.id+'"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+  							html += "</ul>";
+  							html += "<a href='"+url+"pagamento/"+value.id+"' target='_blank' class='btn btn-default action-button'>Fazer pagamento</a><br/>";
+  						}
+  						html += "Status de Anúncio: "+value.status_text;
+					});
+					$(".anuncio").html(html);
+				}
+			}, error: function(e){
+				console.log(e);
+			}
+		})
+
+		$(".login").hide();
+		$(".anuncio").show();
+		$("#login").modal("toggle");
+
+		return false;
 	});
 
 });

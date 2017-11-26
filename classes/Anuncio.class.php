@@ -1,6 +1,26 @@
 <?php
 	class Anuncio extends BD{
 
+		private static function verifyAnuncio($proposta){
+			$pdo = @BD::conn();
+
+			$dataquery = $pdo->prepare("SELECT id_cargas FROM proposta WHERE id = :id");
+			$dataquery->bindParam(":id", $proposta);
+			$dataquery->execute();
+			if($dataquery->rowCount() > 0){
+				$fetch = $dataquery->fetchObject();
+				$select = $pdo->prepare("SELECT id FROM cargas WHERE id = '$fetch->id_cargas' AND status = 2");
+				$select->execute();
+				if($select->rowCount() > 0){
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				return false;
+			}
+		}
+
 		private static function insereItems($parameters = array(), $id_evento){
 			$pdo = @BD::conn();
 			$status = false;
@@ -267,6 +287,83 @@
 			}
 		}
 
+		public function visualizaAction($parameters = array()){
+			session_start();
+			$pdo = parent::conn();
+			$arr = array("status" => "ok", "results" => array());
+
+			$dataquery = $pdo->prepare("SELECT * FROM cargas WHERE id = :id AND id_user = :id_user");
+			$dataquery->bindParam(":id", $parameters['anuncio']);
+			$dataquery->bindParam(":id_user", $_SESSION['id_user']);
+			$dataquery->execute();
+			if($dataquery->rowCount() > 0){
+				$fetch = $dataquery->fetchObject();
+				$status = "Em aberto";
+				if($fetch->status == 1){
+					$status = "Combinando";
+				}else if($fetch->status == 2){
+					$status = "Em processo";
+				}else if($fetch->status == 3){
+					$status = "Finalizado";
+				}
+				$arr["results"][0] = array(
+					"id" => $fetch->id,
+					"titulo" => $fetch->titulo,
+					"descricao" => $fetch->descricao,
+					"rua_r" => $fetch->rua_r,
+					"numero_r" => $fetch->numero_r,
+					"bairro_r" => $fetch->bairro_r,
+					"cidade_r" => $fetch->cidade_r,
+					"estado_r" => $fetch->estado_r,
+					"rua_e" => $fetch->rua_e,
+					"numero_e" => $fetch->numero_e,
+					"bairro_e" => $fetch->bairro_e,
+					"cidade_e" => $fetch->cidade_e,
+					"estado_e" => $fetch->estado_e,
+					"itens" => array(),
+					"proposta" => array(),
+					"status" => $fetch->status,
+					"status_text" => $status,
+					"retirada" => "",
+					"entrega" => ""
+				);
+
+				if($fetch->proposta != 0){
+					$select = $pdo->prepare("SELECT * FROM proposta WHERE id = :id");
+					$select->bindParam(":id", $fetch->proposta);
+					$select->execute();
+					$proposta = $select->fetchObject();
+
+					$select = $pdo->prepare("SELECT firstname FROM users WHERE id = ?");
+					$select->execute(array($proposta->id_usuario));
+					$transportadora = $select->fetchObject();
+
+					$arr["results"][0]['proposta'] = array(
+						"id" => $proposta->id,
+						"id_transportadora" => $proposta->id_usuario,
+						"anuncio" => $fetch->titulo,
+						"nome_transportadora" => $transportadora->firstname,
+						"lance_minimo" => $proposta->lance_minimo,
+						"created_at" => date("d/m/Y H:i:s",strtotime($proposta->created_at))
+					);
+				}
+
+				$select = $pdo->prepare("SELECT nome, quantidade FROM items_cargas WHERE id_cargas = ?");
+				$select->execute(array($fetch->id));
+				while($item = $select->fetchObject()){
+					$arr["results"][0]['itens'][] = array(
+						"nome" => $item->nome,
+						"quantidade" => $item->quantidade
+					);
+				}
+
+
+				return $arr;
+			}else{
+				return false;
+			}
+		}
+
 		public function viewAction($parameters = array()){
 			$pdo = parent::conn();
 			$arr = array("status" => "ok", "results" => array());
@@ -374,7 +471,7 @@
 			$pdo = parent::conn();
 			$arr = array("status" => "ok", "results" => array());
 
-			$dataquery = $pdo->prepare("SELECT p.*, c.titulo FROM proposta AS p INNER JOIN cargas AS c ON p.id_cargas = c.id INNER JOIN users AS u ON c.id_user = u.id WHERE u.id = :id_user");
+			$dataquery = $pdo->prepare("SELECT p.*, c.titulo FROM proposta AS p INNER JOIN cargas AS c ON p.id_cargas = c.id INNER JOIN users AS u ON c.id_user = u.id WHERE u.id = :id_user AND p.status = 0 AND c.status = 0");
 			$dataquery->bindParam(":id_user", $_SESSION['id_user']);
 			$dataquery->execute();
 			if($dataquery->rowCount() > 0){
@@ -400,6 +497,10 @@
 
 		public function respondePropostaAction($parameters = array()){
 			$pdo = parent::conn();
+
+			if(Anuncio::verifyAnuncio($parameters['proposta'])){
+				return 'already';
+			}
 
 			$dataquery = $pdo->prepare("UPDATE proposta SET status = :status WHERE id = :id");
 			$dataquery->bindParam(":status", $parameters['response']);

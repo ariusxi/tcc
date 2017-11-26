@@ -96,7 +96,7 @@ section h3.section-subheading {
     font-weight: 700
 }
 .btn-xl {
-    font-size: 18px;
+    font-size: 14px;
     padding: 20px 40px
 }
 .btn-primary {
@@ -281,6 +281,10 @@ tr:hover {background-color:#f5f5f5;}
 #categoria{
     height:50px;
 }
+.anuncio{
+    display:none;
+    text-align: left;
+}
 .submit{
     background: #e16d59;
     cursor: pointer;
@@ -455,6 +459,7 @@ header.masthead .intro-text .intro-heading {
 .img-profile{
     width: 274px;
     height: 274px;
+    font-size:12px;
     border-bottom: 3px solid #fff;
 }
 .img-profile img{
@@ -589,6 +594,12 @@ header.masthead .intro-text .intro-heading {
         width: calc(100% - 50px);
         float:left;
     }
+    .btn-xl{
+        width:100%;
+        float:left;
+        position:relative;
+        display:block;
+    }
 }
 @media (min-width: 768px){
     .pesquisar .col-md-12 {
@@ -612,8 +623,8 @@ header.masthead .intro-text .intro-heading {
     padding: 20px 30px;
     
     box-sizing: border-box;
-    width: 80%;
-    margin: 0 10%;
+    width: 100%;
+    margin: 0 2%;
     
     /*stacking fieldsets above each other*/
     position: absolute;

@@ -21,13 +21,12 @@
 			url: url+'sys/Anuncio/historico',
 			dataType: 'json',
 			success: function(retorno){
-				console.log(retorno);
 				if(retorno == false){
 					$(".historico").html("<center><h5>Nenhum Anúncio Registrado</h5></center>");
 				}else{
 					var html = "<table><thead><tr><th>#</th><th>Título</th><th>Status</th><th>Criado em</th></tr></tbody><tbody>";
 					$.each(retorno.results, function(i, value){
-						html += "<tr><td>"+value.id+"</td><td>"+value.titulo+"</td><td>"+value.status+"</td><td><a href='#!' onclick='return false' class='view-anuncio' id='"+value.id+"'>Ver detalhes</a></td></tr>";
+						html += "<tr><td>"+value.id+"</td><td>"+value.titulo+"</td><td>"+value.status+"</td><td><a href='#!' class='view-anuncio' id='"+value.id+"'>Ver detalhes</a></td></tr>";
 					});
 					html += "</tbody></table>"
 					$(".historico").html(html);
