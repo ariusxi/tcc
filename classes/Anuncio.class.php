@@ -86,10 +86,12 @@
 				while($fetch = $dataquery->fetchObject()){
 					$status = "Em aberto";
 					if($fetch->status == 1){
-						$status = "Combinando";
+						$status = "Pendente";
 					}else if($fetch->status == 2){
-						$status = "Em processo";
+						$status = "Aguardando pagamento";
 					}else if($fetch->status == 3){
+						$status = "Em processo";
+					}else if($fetch->status == 4){
 						$status = "Finalizado";
 					}
 
@@ -300,10 +302,12 @@
 				$fetch = $dataquery->fetchObject();
 				$status = "Em aberto";
 				if($fetch->status == 1){
-					$status = "Combinando";
+					$status = "Pendente";
 				}else if($fetch->status == 2){
-					$status = "Em processo";
+					$status = "Aguardando pagamento";
 				}else if($fetch->status == 3){
+					$status = "Em processo";
+				}else if($fetch->status == 4){
 					$status = "Finalizado";
 				}
 				$arr["results"][0] = array(

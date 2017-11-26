@@ -60,9 +60,18 @@
 			'token' => $responseNvp['TOKEN']
 		);
 
-		$redirectURL = sprintf('%s?%s', $paypalURL, http_build_query($query));
+		$dataquery = @BD::conn()->prepare("INSERT INTO orders(id_user, id_cargas, token, created_at) VALUES(?,?,?,NOW())");
+		if($dataquery->execute(array($_SESSION['id_user'], $fetch->id, $responseNvp['TOKEN']))){
 
-		header('Location: ' . $redirectURL);
+			$dataquery = @BD::conn()->prepare("UPDATE cargas SET status = 3 WHERE id = ?");
+			$dataquery->execute(array($explode[1]));
+
+			$redirectURL = sprintf('%s?%s', $paypalURL, http_build_query($query));
+
+			header('Location: ' . $redirectURL);
+		}else{
+			echo '<h4>ERRO 500</h4><p>Desculpe, ocorreu um erro durante o processo tente novamente mais tarde</p>';
+		}
 	}else{
 		echo '<h4>ERRO 500</h4><p>Desculpe, ocorreu um erro durante o processo tente novamente mais tarde</p>';
 	}
