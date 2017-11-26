@@ -39,4 +39,36 @@
 		  
 		    return $responseNvp;
 		}
+
+		public static function getNvpRequest(array $requestNvp, $sandbox = false){
+			$postback = 'cmd=_notify-validate';
+
+			foreach($_POST as $key => $value){
+				$value = urlencode(stripslashes($value));
+				$postback .= "&key=$value";
+			}
+
+			$header = "POST /cgi-bin/webscr HTTP/1.0\r\n";
+			$header .= "Content-Type: application:/x-www-form-urlencoded\r\n";
+			$header .= "Content-Length: " . strlen($postback) . "\r\n\r\n";
+
+			$fp = fsockopen('ssl//www.paypal.com', 443, $errno, $errstr, 30);
+
+			if(!$fp){
+				echo "<h4>ERRO 500</h4><p>Desculpe, ocorreu um erro durante o processo tente novamente mais tarde</p>";
+			}else{
+				fputs($fp, $header . $postback);
+				while(!feof($fp)){
+					$response = fgets($fp, 1024);
+					if(strcmp($response, "VERIFIED") == 0){
+						$payment_status = $_POST['payment_status'];
+
+						var_dump($payment_status);
+					}else if(strcmp($response, "INVALID") == 0){
+						echo "<h4>ERRO 500</h4><p>Desculpe, ocorreu um erro durante o processo tente novamente mais tarde</p>";
+					}
+				}
+			}
+			fclose($fp);
+		}
 	}
