@@ -489,6 +489,7 @@ header.masthead .intro-text .intro-heading {
 .menu-side .menu-options ul li a{
     color:#fff;
     line-height:75px;
+    font-size:14px;
 }
 .menu-side .menu-options ul li a:hover{
     text-decoration: none;
@@ -572,6 +573,7 @@ header.masthead .intro-text .intro-heading {
     }
     .menu-side{
         display: none;
+        position:fixed;
         width:100%;
         z-index:100;
     }

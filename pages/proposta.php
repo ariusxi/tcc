@@ -178,7 +178,8 @@
 		</div>
 	</div>
 </div>
-<script async defer src="js/maps.js"></script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7Uycm85bGgWwbxsfsq-Y5bD2EGNbeBsk"></script>
 <script type="text/javascript">
 	var map;
 	var url = "http://localhost/tcc/";
@@ -215,6 +216,7 @@
   			url: url+'sys/Anuncio/anuncio',
   			dataType: 'json',
   			success: function(retorno){
+  				console.log(retorno);
   				if(retorno == false){
   					$(".proposta").html("<center><h4>Não foi encontrado esse anúncio para fazer uma proposta</h4></center>");
   				}else{

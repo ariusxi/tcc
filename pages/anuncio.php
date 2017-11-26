@@ -189,6 +189,12 @@
 			var categoria = parseInt($("input[name=categoria]:checked").val());
 			var subcategoria = parseInt($("input[name=subcategoria]:checked").val());
 
+			if(cep_r == cep_e && rua_r == rua_e && numero_r == numero_e && bairro_r == bairro_e && cidade_r == cidade_e && estado_r == && estado_e){
+				$("feedback").html("<div style='color:red;'>Você não pode fazer um anúncio com os mesmos endereços de Entrega e Retirada</div>");
+				hidemessage("#feedback");
+				return false;
+			}
+
 			for(var i = 0; i < numitems; i++){
 				items[i] = {
 					nome: $("#nome_"+(i+1)).val(),

@@ -24,21 +24,24 @@
 		<div class="menu">
 			<ul>
 				<li class="active"><a href="" class='page' id='profile'><i class="fa fa-user"></i> Meu Perfil</a></li>
-				<li><a href="" class='page' id='anuncios'><i class="fa fa-sign-out"></i> Meus Anúncios</a></li>
+				<?php if($logado->level == 0){ ?>
+				<li><a href="" class='page' id='anuncios'><i class="fa fa-truck" aria-hidden="true"></i> Meus Anúncios</a></li>
+				<?php } ?>
 				<li><a href="" class='page' id='historico'><i class="fa fa-list"></i> Histórico</a></li>
+				<li><a href="<?= BASE.'?sair'; ?>"><i class="fa fa-sign-out"></i> Logout</a></li>
 			</ul>
 		</div>
 	</div>
 	<div class="menu-options">
 		<ul>
 			<?php if($logado->level == 0){ ?>
-			<li><a href="" class='page' id='anuncio'>Fazer um anúncio</a></li>
-			<li><a href="" class='page' id='pesquisa'>Pesquisar uma transportadora</a></li>
-			<li><a href="" class='page' id='lances'>Lances</a></li>
+			<li><a href="" class='page' id='anuncio'><i class="fa fa-newspaper-o" aria-hidden="true"></i> Fazer um anúncio</a></li>
+			<li><a href="" class='page' id='pesquisa'><i class="fa fa-search" aria-hidden="true"></i> Pesquisar uma transportadora</a></li>
+			<li><a href="" class='page' id='lances'><i class="fa fa-money" aria-hidden="true"></i> Lances</a></li>
 			<?php }else if($logado->level == 1){ ?>
-			<li><a href="" class='page' id='motorista'>Motoristas</a></li>
-			<li><a href="" class='page' id='veiculo'>Veiculos</a></li>
-			<li><a href="" class='page' id='pesquisar'>Pesquisar Anúncios</a></li>
+			<li><a href="" class='page' id='motorista'><i class="fa fa-id-card-o" aria-hidden="true"></i> Motoristas</a></li>
+			<li><a href="" class='page' id='veiculo'><i class="fa fa-truck" aria-hidden="true"></i> Veiculos</a></li>
+			<li><a href="" class='page' id='pesquisar'><i class="fa fa-search" aria-hidden="true"></i> Pesquisar Anúncios</a></li>
 			<?php } ?>
 		</ul>
 	</div>
@@ -67,9 +70,9 @@
 							<p>Email: <?= $logado->email; ?></p>
 							<?php } ?>
 						</div>
-						<a class='btn btn-primary btn-xl page setting' id='edit'>Editar Perfil</a>
+						<a class='btn btn-primary btn-xl page setting' id='edit' style='margin-top: 10px;'>Editar Perfil</a>
 						<?php if($logado->level == 1){ ?>
-						<a class='btn btn-primary btn-xl page setting' id='frete'>Configuração de Frete</a>
+						<a class='btn btn-primary btn-xl page setting' id='frete' style='margin-top: 10px;'>Configuração de Frete</a>
 						<?php } ?>
 					</div>
 				</div>

@@ -37,7 +37,7 @@ $(function(){
 	var ajuste = false;
 
 	function check_cpf(cpf){
-		var novoCPF = cpf.replace(/[\.-]/g, "");
+		var novoCPF = cpf.replace(/[^\d]+/g,'');
 		return novoCPF;
 	}
 
@@ -123,39 +123,83 @@ $(function(){
 			dataType: 'json',
 			success: function(retorno){
 				if(retorno.status == "ok"){
-					var html = "<h3>Anúncios Pendentes</h3><table class='table'>";
-					html += "<thead class='small-text'><tr><th>#</th><th>Titulo</th><th>Data de Anúncio</th><th>Categoria</th><th>Subcategoria</th><th>Ações</th></tr></thead><tbody>";
-					$.each(retorno.results, function(i, value){
-						html += "<tr><td>"+value.id+"</td><td>"+value.titulo+"</td><td>"+value.created_at+"</td><td>"+value.categoria+"</td><td>"+value.subcategoria+"</td><td><a href='' class='view' id='"+value.id+"'>Ver mais</a></td></tr>";
-					});
-					html += "</tbody></table>";
-					$(".anuncios").html(html);
-					$(".anuncios table").dataTable({
-						language: {
-						    "sEmptyTable": "Nenhum registro encontrado",
-						    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-						    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
-						    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
-						    "sInfoPostFix": "",
-						    "sInfoThousands": ".",
-						    "sLengthMenu": "_MENU_ resultados por página",
-						    "sLoadingRecords": "Carregando...",
-						    "sProcessing": "Processando...",
-						    "sZeroRecords": "Nenhum registro encontrado",
-						    "sSearch": "Pesquisar",
-						    "oPaginate": {
-						        "sNext": "Próximo",
-						        "sPrevious": "Anterior",
-						        "sFirst": "Primeiro",
-						        "sLast": "Último"
-						    },
-						    "oAria": {
-						        "sSortAscending": ": Ordenar colunas de forma ascendente",
-						        "sSortDescending": ": Ordenar colunas de forma descendente"
-						    }
-						},
-						responsive: true
-					});
+					if(localStorage.getItem("level") == 0){
+						var html = "<h3>Anúncios Pendentes</h3><table class='table'>";
+						html += "<thead class='small-text'><tr><th>#</th><th>Titulo</th><th>Data de Anúncio</th><th>Categoria</th><th>Subcategoria</th><th>Ações</th></tr></thead><tbody>";
+						$.each(retorno.results, function(i, value){
+							html += "<tr><td>"+value.id+"</td><td>"+value.titulo+"</td><td>"+value.created_at+"</td><td>"+value.categoria+"</td><td>"+value.subcategoria+"</td><td><a href='' class='view' id='"+value.id+"'>Ver mais</a></td></tr>";
+						});
+						html += "</tbody></table>";
+						$(".anuncios").html(html);
+						$(".anuncios table").dataTable({
+							language: {
+							    "sEmptyTable": "Nenhum registro encontrado",
+							    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+							    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+							    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+							    "sInfoPostFix": "",
+							    "sInfoThousands": ".",
+							    "sLengthMenu": "_MENU_ resultados por página",
+							    "sLoadingRecords": "Carregando...",
+							    "sProcessing": "Processando...",
+							    "sZeroRecords": "Nenhum registro encontrado",
+							    "sSearch": "Pesquisar",
+							    "oPaginate": {
+							        "sNext": "Próximo",
+							        "sPrevious": "Anterior",
+							        "sFirst": "Primeiro",
+							        "sLast": "Último"
+							    },
+							    "oAria": {
+							        "sSortAscending": ": Ordenar colunas de forma ascendente",
+							        "sSortDescending": ": Ordenar colunas de forma descendente"
+							    }
+							},
+							responsive: true
+						});
+					}else{
+						var html = "<h3>Propostas Pendentes</h3><table class='table'>";
+						html += "<thead class='small-text'><tr><th>#</th><th>Título</th><th>Status</th><th>Categoria</th><th>Subcategoria</th><th>Enviada em</th><th>Ações</th></tr></thead><tbody>";
+						$.each(retorno.results, function(i, value){
+							var status = "";
+							if(value.status == 0){
+								status = "Pendente";
+							}else if(value.status == 1){
+								status = "Proposta aceita";
+							}else{
+								status = "Proposta recusada";
+							}
+							html += "<tr><td>"+(i+1)+"</td><td>"+value.titulo+"</td><td>"+status+"</td><td>"+value.categoria+"</td><td>"+value.subcategoria+"</td><td>"+value.created_at+"</td><td><a href='javascript:void(0);' id='"+value.id+"'>Ver detalhes</a></td></tr>";
+						});
+						html += "</tbody></table>";
+						$(".anuncios").html(html);
+						$(".anuncios table").dataTable({
+							language: {
+							    "sEmptyTable": "Nenhum registro encontrado",
+							    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+							    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+							    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+							    "sInfoPostFix": "",
+							    "sInfoThousands": ".",
+							    "sLengthMenu": "_MENU_ resultados por página",
+							    "sLoadingRecords": "Carregando...",
+							    "sProcessing": "Processando...",
+							    "sZeroRecords": "Nenhum registro encontrado",
+							    "sSearch": "Pesquisar",
+							    "oPaginate": {
+							        "sNext": "Próximo",
+							        "sPrevious": "Anterior",
+							        "sFirst": "Primeiro",
+							        "sLast": "Último"
+							    },
+							    "oAria": {
+							        "sSortAscending": ": Ordenar colunas de forma ascendente",
+							        "sSortDescending": ": Ordenar colunas de forma descendente"
+							    }
+							},
+							responsive: true
+						});
+					}
 				}else{
 					$(".anuncios").html("<center><h3>Nenhum Anúncio em Andamento</h3></center>");
 				}
@@ -260,6 +304,30 @@ $(function(){
 		return false;
 	});
 
+	$("#cpf_c").keyup(function(){
+		var cpf = $(this).val();
+		cpf = check_cpf(cpf);
+		if(cpf.length == 11){
+			cpf = check_cpf(cpf);
+			if(TestaCPF(cpf) == true){
+				$("#cpf_c").css("border-bottom", "1px solid green");
+			}else{
+				$("#cpf_c").css("border-bottom", "1px solid red");
+			}
+		}
+	});
+
+	$("#cnpj_t").keyup(function(){
+		var cnpj = $(this).val();
+		if(cnpj.length == 18){
+			if(validarCNPJ(cnpj)){
+				$("#cnpj_t").css("border-bottom", "1px solid green");
+			}else{
+				$("#cnpj_t").css("border-bottom", "1px solid red");
+			}
+		}
+	});
+
 	$(".select-categoria").click(function(e){
 		e.preventDefault();
 
@@ -339,7 +407,7 @@ $(function(){
 			perfil += '<p>Email: '+localStorage.getItem("email")+'</p>';
 			perfil += '</div>';
 
-			button = "<a class='btn btn-primary btn-xl page setting' id='frete' style='margin-left:10px'>Configuração de Frete</a>";
+			button = "<a class='btn btn-primary btn-xl page setting' id='frete' style='margin-top:10px;'>Configuração de Frete</a>";
 		}
 
 		var classes = $(this).attr('class');
@@ -353,7 +421,7 @@ $(function(){
 		}
 
 		if(page == "profile"){
-			$(".perfil").html('<div class="container-fluid"><div class="row"><div class="col-md-12"><div class="card"><div class="profile">'+perfil+'<a class="btn btn-primary btn-xl page" id="edit">Editar Perfil</a>'+button+'</div></div></div><div class="col-md-12"><div class="card anuncios"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div></div></div></div>');
+			$(".perfil").html('<div class="container-fluid"><div class="row"><div class="col-md-12"><div class="card"><div class="profile">'+perfil+'<a class="btn btn-primary btn-xl page" id="edit" style="margin-top:10px;">Editar Perfil</a>'+button+'</div></div></div><div class="col-md-12"><div class="card anuncios"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div></div></div></div>');
 			getAnuncios();
 		}else{
 			$(".perfil").load(url+'pages/'+page[0]+'.php'+get);
@@ -735,6 +803,8 @@ $(function(){
 			hidemessage("#feedback_c");
 			return false;
 		}
+
+		return false;
 
 		$.ajax({
 			type: 'POST',

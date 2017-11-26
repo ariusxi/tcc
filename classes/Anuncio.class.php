@@ -51,23 +51,47 @@
 			$arr = array("status" => "ok", "results" => array());
 			$ids_carregados = array();
 
-			$dataquery = $pdo->prepare("SELECT cargas.id, cargas.titulo, cargas.created_at,categorias.categoria, subcategorias.subcategoria FROM cargas INNER JOIN categorias ON cargas.categoria = categorias.id INNER JOIN subcategorias ON subcategorias.id = cargas.id WHERE cargas.id_user = :id_user AND cargas.status = 0");
-			$dataquery->bindParam(":id_user", $_SESSION['id_user']);
-			$dataquery->execute();
-			if($dataquery->rowCount() > 0){
-				while($fetch = $dataquery->fetchObject()){
-					if(!in_array($fetch->id, $ids_carregados)){
-						$arr["results"][] = array(
-							"id" => $fetch->id,
-							"titulo" => $fetch->titulo,
-							"created_at" => date("d/m/Y", strtotime($fetch->created_at)),
-							"categoria" => $fetch->categoria,
-							"subcategoria" => $fetch->subcategoria
-						);
-						$ids_carregados[] = $fetch->id;
+			if($_SESSION['level'] == 0 ){
+				$dataquery = $pdo->prepare("SELECT cargas.id, cargas.titulo, cargas.created_at,categorias.categoria, subcategorias.subcategoria FROM cargas INNER JOIN categorias ON cargas.categoria = categorias.id INNER JOIN subcategorias ON subcategorias.id = cargas.id WHERE cargas.id_user = :id_user AND cargas.status = 0");
+				$dataquery->bindParam(":id_user", $_SESSION['id_user']);
+				$dataquery->execute();
+				if($dataquery->rowCount() > 0){
+					while($fetch = $dataquery->fetchObject()){
+						if(!in_array($fetch->id, $ids_carregados)){
+							$arr["results"][] = array(
+								"id" => $fetch->id,
+								"titulo" => $fetch->titulo,
+								"created_at" => date("d/m/Y", strtotime($fetch->created_at)),
+								"categoria" => $fetch->categoria,
+								"subcategoria" => $fetch->subcategoria
+							);
+							$ids_carregados[] = $fetch->id;
+						}
 					}
 				}
+			}else{
+				$dataquery = $pdo->prepare("SELECT proposta.* FROM proposta INNER JOIN cargas ON proposta.id_cargas = cargas.id WHERE id_usuario = :id_usuario AND cargas.status != 4");
+				$dataquery->bindParam(":id_usuario", $_SESSION['id_user']);
+				$dataquery->execute();
+				if($dataquery->rowCount() > 0){
+					$fetch = $dataquery->fetchObject();
+					$select = $pdo->prepare("SELECT cargas.titulo, categorias.categoria, subcategorias.subcategoria FROM cargas INNER JOIN categorias ON cargas.categoria = categorias.id INNER JOIN subcategorias ON subcategorias.id = subcategorias.id WHERE cargas.id = '$fetch->id_cargas'");
+					$select->execute();
+					$carga = $select->fetchObject();
+					while($fetch = $dataquery->fetchObject()){
+						$arr['results'][] = array(
+							"id" => $fetch->id,
+							"titulo" => $carga->titulo,
+							"status" => $fetch->status,
+							"categoria" => $carga->categoria,
+							"subcategoria" => $carga->subcategoria,
+							"created_at" => date("d/m/Y H:i:s", strtotime($fetch->created_at))
+						);
+					}
+				}
+			}
 
+			if(count($arr['results']) > 0){
 				return $arr;
 			}else{
 				return false;
@@ -79,30 +103,55 @@
 			$pdo = parent::conn();
 			$arr = array("status" => "ok", "results" => array());
 
-			$dataquery = $pdo->prepare("SELECT id, titulo, status, created_at FROM cargas WHERE id_user = :id_user");
-			$dataquery->bindParam(":id_user", $_SESSION['id_user']);
-			$dataquery->execute();
-			if($dataquery->rowCount() > 0){
-				while($fetch = $dataquery->fetchObject()){
-					$status = "Em aberto";
-					if($fetch->status == 1){
-						$status = "Pendente";
-					}else if($fetch->status == 2){
-						$status = "Aguardando pagamento";
-					}else if($fetch->status == 3){
-						$status = "Em processo";
-					}else if($fetch->status == 4){
-						$status = "Finalizado";
+			if($_SESSION['level'] == 0){
+				$dataquery = $pdo->prepare("SELECT id, titulo, status, created_at FROM cargas WHERE id_user = :id_user");
+				$dataquery->bindParam(":id_user", $_SESSION['id_user']);
+				$dataquery->execute();
+				if($dataquery->rowCount() > 0){
+					while($fetch = $dataquery->fetchObject()){
+						$status = "Em aberto";
+						if($fetch->status == 1){
+							$status = "Pendente";
+						}else if($fetch->status == 2){
+							$status = "Aguardando pagamento";
+						}else if($fetch->status == 3){
+							$status = "Em processo";
+						}else if($fetch->status == 4){
+							$status = "Finalizado";
+						}
+
+						$arr["results"][] = array(
+							"id" => $fetch->id,
+							"titulo" => $fetch->titulo,
+							"status" => $status,
+							"criado" => date("d/m/Y H:i:s", strtotime($fetch->created_at))
+						);
+					};
+					return $arr;
+				}
+			}else{
+				$dataquery = $pdo->prepare("SELECT proposta.* FROM proposta INNER JOIN cargas ON proposta.id_cargas = cargas.id WHERE id_usuario = :id_usuario AND cargas.status != 4");
+				$dataquery->bindParam(":id_usuario", $_SESSION['id_user']);
+				$dataquery->execute();
+				if($dataquery->rowCount() > 0){
+					$fetch = $dataquery->fetchObject();
+					$select = $pdo->prepare("SELECT cargas.titulo, categorias.categoria, subcategorias.subcategoria FROM cargas INNER JOIN categorias ON cargas.categoria = categorias.id INNER JOIN subcategorias ON subcategorias.id = subcategorias.id WHERE cargas.id = '$fetch->id_cargas'");
+					$select->execute();
+					$carga = $select->fetchObject();
+					while($fetch = $dataquery->fetchObject()){
+						$arr['results'][] = array(
+							"id" => $fetch->id,
+							"titulo" => $carga->titulo,
+							"status" => $fetch->status,
+							"categoria" => $carga->categoria,
+							"subcategoria" => $carga->subcategoria,
+							"created_at" => date("d/m/Y H:i:s", strtotime($fetch->created_at))
+						);
 					}
+				}
+			}
 
-					$arr["results"][] = array(
-						"id" => $fetch->id,
-						"titulo" => $fetch->titulo,
-						"status" => $status,
-						"criado" => date("d/m/Y H:i:s", strtotime($fetch->created_at))
-					);
-				};
-
+			if(count($arr['results']) > 0){
 				return $arr;
 			}else{
 				return false;
