@@ -178,12 +178,12 @@
 			var cidade_r = $("#cidade_r").val();
 			var estado_r = $("#estado_r").val();
 
-			var cep_e = $("#cep_r").val();
-			var rua_e = $("#rua_r").val();
-			var numero_e = $("#numero_r").val();
-			var bairro_e = $("#bairro_r").val();
-			var cidade_e = $("#cidade_r").val();
-			var estado_e = $("#estado_r").val();
+			var cep_e = $("#cep_e").val();
+			var rua_e = $("#rua_e").val();
+			var numero_e = $("#numero_e").val();
+			var bairro_e = $("#bairro_e").val();
+			var cidade_e = $("#cidade_e").val();
+			var estado_e = $("#estado_e").val();
 			var descricao = $("#descricao").val();
 
 			var categoria = parseInt($("input[name=categoria]:checked").val());
