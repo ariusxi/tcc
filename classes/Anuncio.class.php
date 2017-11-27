@@ -574,4 +574,29 @@
 			}
 		}
 
+		public function viewPropostaAction($parameters = array()){
+			$pdo = parent::conn();
+			$arr = array("status" => "ok", "results" => array());
+
+			$dataquery = $pdo->prepare("SELECT cargas.titulo, proposta.* FROM proposta INNER JOIN cargas ON proposta.id_cargas = cargas.id WHERE proposta.id = :id");
+			$dataquery->bindParam(":id", $parameters['proposta']);
+			$dataquery->execute();
+			if($dataquery->rowCount() > 0){
+				while($fetch = $dataquery->fetchObject()){
+					$arr["results"][] = array(
+						"id" => $fetch->id,
+						"titulo" => $fetch->titulo,
+						"lance_minimo" => $fetch->lance_minimo,
+						"lance_inicial" => $fetch->lance_inicial,
+						"info_cliente" => $fetch->info_cliente,
+						"termo_condicoes" => $fetch->termo_condicoes,
+						"status" => $fetch->status
+					);
+				}
+				return $arr;
+			}else{
+				return false;
+			}
+		}
+
 	}

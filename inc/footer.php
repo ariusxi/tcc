@@ -7,6 +7,9 @@
 		               		<div class="rl"></div>
 		            	</div>
 		         	</div>
+		         	<div class="container proposta">
+		         		
+		         	</div>
 		         	<div class="container anuncio">
 		         		Anúncio
 		         	</div>

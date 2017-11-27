@@ -169,7 +169,7 @@ $(function(){
 							}else{
 								status = "Proposta recusada";
 							}
-							html += "<tr><td>"+(i+1)+"</td><td>"+value.titulo+"</td><td>"+status+"</td><td>"+value.categoria+"</td><td>"+value.subcategoria+"</td><td>"+value.created_at+"</td><td><a href='javascript:void(0);' id='"+value.id+"'>Ver detalhes</a></td></tr>";
+							html += "<tr><td>"+(i+1)+"</td><td>"+value.titulo+"</td><td>"+status+"</td><td>"+value.categoria+"</td><td>"+value.subcategoria+"</td><td>"+value.created_at+"</td><td><a href='#!' class='view-proposta' id='"+value.id+"'>Ver detalhes</a></td></tr>";
 						});
 						html += "</tbody></table>";
 						$(".anuncios").html(html);
@@ -365,6 +365,63 @@ $(function(){
 
 		return false;
 	});
+
+	$(document).on("click", ".view-proposta", function(e){
+		e.preventDefault();
+
+		var proposta = $(this).attr('id');
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Anuncio/viewProposta',
+			dataType: 'json',
+			data: {
+				proposta: proposta
+			}, success: function(retorno){
+				if(retorno == false){
+					$(".proposta").html("<center><h4>Proposta indisponível</h4></center>");
+				}else{
+					var html = "";
+					$.each(retorno.results, function(i, value){
+							html = "<h3>"+value.titulo+"</h3>";
+							html += "<p>Lance mínimo: "+value.lance_minimo+" Lance inicial: "+value.lance_inicial+"</p>";
+							html += "<hr />";
+							html += "<h5>Termos e Condições</h5>";
+							html += "<textarea class='termo_condicoes' wrap='off' cols='30' rows='5' disabled='disabled'>"+value.termo_condicoes+"</textarea>";
+							html += "<hr />";
+							html += "<h5>Informações para o cliente</h5>";
+							html += "<textarea class='info_cliente' wrap='off' cols='30' rows='5' disabled='disabled'>"+value.info_cliente+"</textarea>";
+							html += "<hr />";
+							if(value.status == 1){
+								html += "<p>Status de Proposta: Aceita</p>";
+							}else if(value.status == 2){
+								html += "<p>Status de Proposta: Recusada</p>";
+							}else{
+								html += "<p>Status de Proposta: Pendente</p>";
+							}
+					});
+
+					$(".proposta").html(html);
+				}
+			}, error: function(e){
+				console.log(e);
+			}
+		});
+
+		$(".login").hide();
+		$(".proposta").show();
+		$("#login").modal("toggle");
+
+		return false;
+	});
+
+	$(".view-proposta").click(function(e){
+		$(".login").hide();
+		$(".proposta").show();
+		$("#login").modal("toggle");
+
+		return false;
+	});
 	
 	$(document).on("click",".page",function(e){
 		e.preventDefault();
@@ -381,7 +438,7 @@ $(function(){
 		var email = localStorage.getItem("email");
 		var largura = $(document).width();
 
-		if(atual == page){
+		if(atual == page && largura > 1085){
 			return false;
 		}
 

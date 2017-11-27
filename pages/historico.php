@@ -75,7 +75,7 @@
 							}else{
 								status = "Proposta recusada";
 							}
-							html += "<tr><td>"+(i+1)+"</td><td>"+value.titulo+"</td><td>"+status+"</td><td>"+value.categoria+"</td><td>"+value.subcategoria+"</td><td>"+value.created_at+"</td><td><a href='javascript:void(0);' id='"+value.id+"'>Ver detalhes</a></td></tr>";
+							html += "<tr><td>"+(i+1)+"</td><td>"+value.titulo+"</td><td>"+status+"</td><td>"+value.categoria+"</td><td>"+value.subcategoria+"</td><td>"+value.created_at+"</td><td><a href='#!' class='view-proposta' id='"+value.id+"'>Ver detalhes</a></td></tr>";
 						});
 						html += "</tbody></table>";
 						$(".historico").html(html);
