@@ -1,6 +1,19 @@
 <?php
 	class Anuncio extends BD{
 
+		private static function verifyTransporte($carga){
+			$pdo = @BD::conn();
+
+			$dataquery = $pdo->prepare("SELECT id FROM cargas_to_transporte WHERE id_cargas = :id_cargas");
+			$dataquery->bindParam(":id_cargas", $carga);
+			$dataquery->execute();
+			if($dataquery->rowCount() > 0){
+				return true;
+			}else{
+				return false;
+			}
+		}
+
 		private static function verifyAnuncio($proposta){
 			$pdo = @BD::conn();
 
@@ -130,7 +143,7 @@
 					return $arr;
 				}
 			}else{
-				$dataquery = $pdo->prepare("SELECT proposta.* FROM proposta INNER JOIN cargas ON proposta.id_cargas = cargas.id WHERE id_usuario = :id_usuario AND cargas.status != 4");
+				$dataquery = $pdo->prepare("SELECT proposta.* FROM proposta INNER JOIN cargas ON proposta.id_cargas = cargas.id WHERE id_usuario = :id_usuario");
 				$dataquery->bindParam(":id_usuario", $_SESSION['id_user']);
 				$dataquery->execute();
 				if($dataquery->rowCount() > 0){
@@ -582,18 +595,100 @@
 			$dataquery->bindParam(":id", $parameters['proposta']);
 			$dataquery->execute();
 			if($dataquery->rowCount() > 0){
+				$carga = 0;
 				while($fetch = $dataquery->fetchObject()){
+					$carga = $fetch->id_cargas;
 					$arr["results"][] = array(
 						"id" => $fetch->id,
+						"id_cargas" => $carga,
 						"titulo" => $fetch->titulo,
 						"lance_minimo" => $fetch->lance_minimo,
 						"lance_inicial" => $fetch->lance_inicial,
 						"info_cliente" => $fetch->info_cliente,
 						"termo_condicoes" => $fetch->termo_condicoes,
-						"status" => $fetch->status
+						"status" => $fetch->status,
+						"transporte" => array()
+					);
+				}
+				if(Anuncio::verifyTransporte($carga)){
+					$select = $pdo->prepare("SELECT * FROM cargas_to_transporte WHERE id_cargas = ?");
+					$select->execute(array($carga));
+					$transp = $select->fetchObject();
+
+					$motorista = $pdo->prepare("SELECT * FROM motorista WHERE id = ?");
+					$motorista->execute(array($transp->id_motorista));
+					$moto = $motorista->fetchObject();
+
+					$veiculo = $pdo->prepare("SELECT * FROM veiculo WHERE id = ?");
+					$veiculo->execute(array($transp->id_veiculo));
+					$veic = $veiculo->fetchObject();
+
+					$arr["results"][0]["transportes"]["status"] = $transp->status;
+					$arr["results"][0]["transportes"]["prazo"] = date("d/m/Y", strtotime($transp->prazo));
+					$arr["results"][0]["transportes"]["transporte"] = $transp->id;
+
+					$arr["results"][0]["transportes"]["length"] = 1;
+
+					$arr["results"][0]["transportes"]["motorista"][] = array(
+						"id" => $moto->id,
+						"firstname" => $moto->firstname,
+						"lastname" => $moto->lastname,
+						"rg" => $moto->rg,
+						"oe" => $moto->oe,
+						"cpf" => $moto->cpf,
+						"nregistro" => $moto->nregistro,
+						"cathab" => $moto->cathab,
+						"validade" => date("d/m/Y", strtotime($moto->validade))
+					);
+
+					$arr["results"][0]["transportes"]["veiculo"][] = array(
+						"id" => $veic->id,
+						"renavam" => $veic->renavam,
+						"chassi" => $veic->chassi,
+						"placa" => $veic->placa,
+						"modelo" => $veic->modelo,
+						"marca" => $veic->marca,
+						"anomodelo" => $veic->anomodelo,
+						"anofabricacao" => $veic->anofabricacao,
+						"categoria" => $veic->categoria,
+						"comentario" => $veic->comentario
 					);
 				}
 				return $arr;
+			}else{
+				return false;
+			}
+		}
+
+		public function transporteAction($parameters = array()){
+			$pdo = parent::conn();
+
+			$dataquery = $pdo->prepare("INSERT INTO cargas_to_transporte(id_cargas, id_motorista, id_veiculo, prazo, status, created_at) VALUES(:id_cargas, :id_motorita, :id_veiculo, :prazo, 0, NOW())");
+			$dataquery->bindParam(":id_cargas", $parameters['carga']);
+			$dataquery->bindParam(":id_motorita", $parameters['motorista']);
+			$dataquery->bindParam(":id_veiculo", $parameters['veiculo']);
+			$dataquery->bindParam(":prazo", $parameters['prazo']);
+			if($dataquery->execute()){
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+		public function finalizaTransporteAction($parameters = array()){
+			$pdo = parent::conn();
+
+			$dataquery = $pdo->prepare("UPDATE cargas_to_transporte SET status = 1 WHERE id = :id");
+			$dataquery->bindParam(":id", $parameters['transporte']);
+			if($dataquery->execute()){
+				$select = $pdo->prepare("SELECT * FROM cargas_to_transporte WHERE id = ?");
+				$select->execute(array($parameters['transporte']));
+				$dados = $select->fetchObject();
+
+				$update = $pdo->prepare("UPDATE cargas SET status = 4 WHERE id = ?");
+				$update->execute(array($dados->id_cargas));
+
+				return true;
 			}else{
 				return false;
 			}

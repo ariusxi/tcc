@@ -219,4 +219,45 @@
 			}
 		}
 
+		public function getDadosTransportadoraAction($parameters = array()){
+			session_start();
+			$pdo = parent::conn();
+			$arr = array("status" => "ok", "results" => array("motoristas" => array(), "veiculos" => array(), "endereco" => array()));
+
+			$dataquery = $pdo->prepare("SELECT * FROM motorista WHERE id_user = ?");
+			$dataquery->execute(array($_SESSION['id_user']));
+			while($fetch = $dataquery->fetchObject()){
+				$arr["results"]["motoristas"][] = array(
+					"id" => $fetch->id,
+					"firstname" => $fetch->firstname,
+					"lastname" => $fetch->lastname,
+					"rg" => $fetch->rg,
+					"oe" => $fetch->oe,
+					"cpf" => $fetch->cpf,
+					"nregistro" => $fetch->nregistro,
+					"cathab" => $fetch->cathab,
+					"validade" => date("d/m/Y", strtotime($fetch->validade))
+				);
+			}
+
+			$dataquery = $pdo->prepare("SELECT * FROM veiculo WHERE id_user = ?");
+			$dataquery->execute(array($_SESSION['id_user']));
+			while($fetch = $dataquery->fetchObject()){
+				$arr["results"]["veiculos"][] = array(
+					"id" => $fetch->id,
+					"renavam" => $fetch->renavam,
+					"chassi" => $fetch->chassi,
+					"placa" => $fetch->placa,
+					"modelo" => $fetch->modelo,
+					"marca" => $fetch->marca,
+					"anomodelo" => $fetch->anomodelo,
+					"anofabricacao" => $fetch->anofabricacao,
+					"categoria" => $fetch->categoria,
+					"comentario" => $fetch->comentario
+				);
+			}
+
+			return $arr;
+		}
+
 	}

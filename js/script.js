@@ -384,7 +384,7 @@ $(function(){
 					var html = "";
 					$.each(retorno.results, function(i, value){
 							html = "<h3>"+value.titulo+"</h3>";
-							html += "<p>Lance mínimo: "+value.lance_minimo+" Lance inicial: "+value.lance_inicial+"</p>";
+							html += "<p>Lance mínimo: R$"+value.lance_minimo+" Lance inicial: R$"+value.lance_inicial+"</p>";
 							html += "<hr />";
 							html += "<h5>Termos e Condições</h5>";
 							html += "<textarea class='termo_condicoes' wrap='off' cols='30' rows='5' disabled='disabled'>"+value.termo_condicoes+"</textarea>";
@@ -398,6 +398,53 @@ $(function(){
 								html += "<p>Status de Proposta: Recusada</p>";
 							}else{
 								html += "<p>Status de Proposta: Pendente</p>";
+							}
+							if(value.transportes.length > 0){
+								html += '<ul class="list-items" style="text-align:left !important;">';
+								$.each(value.transportes.motorista, function(i, motorista){
+									console.log(motorista);
+									html += "<li class='motorista_"+motorista.id+"'>";
+									html += '<div class="icon"><i class="fa fa-user" aria-hidden="true"></i></div>';
+									html += '<div class="details">';
+									html += '<strong><label>'+motorista.firstname+' '+motorista.lastname+'</label></strong>';
+									html += '<p>';
+									html += 'RG: '+motorista.rg+'<br>';
+									html += 'OE: '+motorista.oe+'<br>';
+									html += 'CPF: '+motorista.cpf+'<br>';
+									html += 'Nº Registro: '+motorista.nregistro+'<br>';
+									html += 'Categoria da Carteira: '+motorista.cathab+'<br>';
+									html += 'Validade: '+motorista.validade+'<br>';
+									html += '</p>';
+									html += '</div>';
+									html += "</li>";
+								});
+								$.each(value.transportes.veiculo, function(i, veiculo){
+									html += "<li class='veiculo_"+veiculo.id+"'>";
+									html += '<div class="icon"><i class="fa fa-truck" aria-hidden="true"></i></div>';
+									html += '<div class="details">';
+									html += '<strong><label>'+veiculo.modelo+'</label></strong>';
+									html += '<p>';
+									html += 'Placa: '+veiculo.placa+'<br>';
+									html += 'Marca: '+veiculo.marca+'<br>';
+									html += 'Chassi: '+veiculo.chassi+'<br>';
+									html += 'Ano de Fabricação: '+veiculo.anofabricacao+'<br>';
+									html += 'Ano do Modelo: '+veiculo.anomodelo+'<br>';
+									html += 'Renavam: '+veiculo.renavam+'<br>';
+									html += '</p>';
+									html += '</div>';
+									html += "</li>";
+								})
+								html += '</ul>';
+								console.log(value.transportes);
+								if(value.transportes.status == '1'){
+									html += '<label>Transporte finalizado</label>';
+								}else{
+									html += '<label>Prazo de Entrega: '+value.transportes.prazo+'</label>';
+									html += "<div id='retorno_transporte'></div>";
+									html += "<button class='btn btn-primary btn-xl finalizar' id='"+value.transportes.transporte+"' style='margin-top:20px'>Finalizar Transporte</button>";
+								}
+							}else{
+								html += "<button class='page btn btn-primary btn-xl' id='transporte/"+value.id_cargas+"'>Enviar para transporte</button>";
 							}
 					});
 
@@ -413,6 +460,32 @@ $(function(){
 		$("#login").modal("toggle");
 
 		return false;
+	});
+
+	$(document).on("click", ".finalizar", function(){
+		var transporte = $(this).attr("id");
+
+		if(confirm("Você tem certeza que deseja encerrar o transporte?") == false){
+			return false;
+		}
+
+		$.ajax({
+			type: 'POST',
+			url: url+'sys/Anuncio/finalizaTransporte',
+			dataType: 'json',
+			data: {
+				transporte: transporte
+			}, success: function(retorno){
+				if(retorno == true){
+					$(".finalizar").prop("disabled", true);
+					$("#retorno_transporte").html('<div style="color:green;">Transporte finalizado com sucesso</div>');
+					hidemessage("#retorno_transporte");
+				}else{
+					$("#retorno_transporte").html('<div style="color:red;">Ocorreu um erro, tente novamente mais tarde</div>');
+					hidemessage("#retorno_transporte");
+				}
+			}
+		});
 	});
 
 	$(".view-proposta").click(function(e){
@@ -441,6 +514,8 @@ $(function(){
 		if(atual == page && largura > 1085){
 			return false;
 		}
+
+		$("#login").modal('hide');
 
 		var perfil = "";
 		var button = "";
