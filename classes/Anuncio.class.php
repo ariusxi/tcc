@@ -14,6 +14,20 @@
 			}
 		}
 
+		private static function verifyPagamento($carga){
+			$pdo = @BD::conn();
+
+			$dataquery = $pdo->prepare("SELECT id FROM orders WHERE id_user = :id_user AND id_cargas = :id_cargas");
+			$dataquery->bindParam(":id_user", $_SESSION['id_user']);
+			$dataquery->bindParam(":id_cargas", $carga);
+			$dataquery->execute();
+			if($dataquery->rowCount() > 0){
+				return true;
+			}else{
+				return false;
+			}
+		}
+
 		private static function verifyAnuncio($proposta){
 			$pdo = @BD::conn();
 
@@ -411,6 +425,49 @@
 						"nome_transportadora" => $transportadora->firstname,
 						"lance_minimo" => $proposta->lance_minimo,
 						"created_at" => date("d/m/Y H:i:s",strtotime($proposta->created_at))
+					);
+				}
+
+				$arr["results"][0]["pagamento"] = Anuncio::verifyPagamento($fetch->id);
+
+				if($fetch->status >= 3){
+					$select = $pdo->prepare("SELECT * FROM cargas_to_transporte WHERE id_cargas = ?");
+					$select->execute(array($fetch->id));
+					$transp = $select->fetchObject();
+
+					$motorista = $pdo->prepare("SELECT * FROM motorista WHERE id = ?");
+					$motorista->execute(array($transp->id_motorista));
+					$moto = $motorista->fetchObject();
+
+					$veiculo = $pdo->prepare("SELECT * FROM veiculo WHERE id = ?");
+					$veiculo->execute(array($transp->id_veiculo));
+					$veic = $veiculo->fetchObject();
+
+					$arr["results"][0]["transportes"]["length"] = 1;
+
+					$arr["results"][0]["transportes"]["motorista"][] = array(
+						"id" => $moto->id,
+						"firstname" => $moto->firstname,
+						"lastname" => $moto->lastname,
+						"rg" => $moto->rg,
+						"oe" => $moto->oe,
+						"cpf" => $moto->cpf,
+						"nregistro" => $moto->nregistro,
+						"cathab" => $moto->cathab,
+						"validade" => date("d/m/Y", strtotime($moto->validade))
+					);
+
+					$arr["results"][0]["transportes"]["veiculo"][] = array(
+						"id" => $veic->id,
+						"renavam" => $veic->renavam,
+						"chassi" => $veic->chassi,
+						"placa" => $veic->placa,
+						"modelo" => $veic->modelo,
+						"marca" => $veic->marca,
+						"anomodelo" => $veic->anomodelo,
+						"anofabricacao" => $veic->anofabricacao,
+						"categoria" => $veic->categoria,
+						"comentario" => $veic->comentario
 					);
 				}
 

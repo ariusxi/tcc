@@ -26,7 +26,6 @@
 			url: url+'sys/Anuncio/historico',
 			dataType: 'json',
 			success: function(retorno){
-				console.log(retorno);
 				if(retorno == false){
 					$(".historico").html("<center><h5>Nenhum Anúncio Registrado</h5></center>");
 				}else{

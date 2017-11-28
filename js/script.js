@@ -36,6 +36,11 @@ $(function(){
 	var motorista = false;
 	var ajuste = false;
 
+	function calcIdade(dateString) {
+	    var birthday = +new Date(dateString);
+ 		return ~~((Date.now() - birthday) / (31557600000));
+	}
+
 	function check_cpf(cpf){
 		var novoCPF = cpf.replace(/[^\d]+/g,'');
 		return novoCPF;
@@ -936,7 +941,11 @@ $(function(){
 			return false;
 		}
 
-		return false;
+		if(calcIdade(datanasc) < 18){
+			$("#feedback_c").html("<div style='color:red;'>Você deve ser maior de 18 anos para se cadastrar</div>");
+			hidemessage("#feedback_c");
+			return false;
+		}
 
 		$.ajax({
 			type: 'POST',
@@ -1445,7 +1454,7 @@ $(function(){
 						$.each(value.itens, function(n, item){
   							$(".items tbody").append("<tr><td>"+(n+1)+"</td><td>"+item.nome+"</td><td>"+item.quantidade+"</td></tr>");
   						});
-  						if(value.status == 2){
+  						if(value.status >= 2){
   							html += "<hr/>";
   							html += "<h5>Proposta aceita</h5>";
   							html += "<ul class='list-items'>";
@@ -1461,7 +1470,48 @@ $(function(){
 							html += '</div>';
 							html += '<a class="view" id="'+value.proposta.id+'"><i class="fa fa-eye" aria-hidden="true"></i></a>';
   							html += "</ul>";
-  							html += "<a href='"+url+"pagamento/"+value.id+"' target='_blank' class='btn btn-default action-button'>Fazer pagamento</a><br/>";
+  							console.log(value);
+  							if(value.transportes.length > 0){
+  								html += "<h4 style='margin-top:20px;'>Definidos pela Transportadora</h4>";
+								html += '<ul class="list-items" style="text-align:left !important;">';
+								$.each(value.transportes.motorista, function(i, motorista){
+									console.log(motorista);
+									html += "<li class='motorista_"+motorista.id+"'>";
+									html += '<div class="icon"><i class="fa fa-user" aria-hidden="true"></i></div>';
+									html += '<div class="details">';
+									html += '<strong><label>'+motorista.firstname+' '+motorista.lastname+'</label></strong>';
+									html += '<p>';
+									html += 'RG: '+motorista.rg+'<br>';
+									html += 'OE: '+motorista.oe+'<br>';
+									html += 'CPF: '+motorista.cpf+'<br>';
+									html += 'Nº Registro: '+motorista.nregistro+'<br>';
+									html += 'Categoria da Carteira: '+motorista.cathab+'<br>';
+									html += 'Validade: '+motorista.validade+'<br>';
+									html += '</p>';
+									html += '</div>';
+									html += "</li>";
+								});
+								$.each(value.transportes.veiculo, function(i, veiculo){
+									html += "<li class='veiculo_"+veiculo.id+"'>";
+									html += '<div class="icon"><i class="fa fa-truck" aria-hidden="true"></i></div>';
+									html += '<div class="details">';
+									html += '<strong><label>'+veiculo.modelo+'</label></strong>';
+									html += '<p>';
+									html += 'Placa: '+veiculo.placa+'<br>';
+									html += 'Marca: '+veiculo.marca+'<br>';
+									html += 'Chassi: '+veiculo.chassi+'<br>';
+									html += 'Ano de Fabricação: '+veiculo.anofabricacao+'<br>';
+									html += 'Ano do Modelo: '+veiculo.anomodelo+'<br>';
+									html += 'Renavam: '+veiculo.renavam+'<br>';
+									html += '</p>';
+									html += '</div>';
+									html += "</li>";
+								});
+								html += "</ul>";
+							}
+							if(value.pagamento == false){
+  								html += "<a href='"+url+"pagamento/"+value.id+"' target='_blank' class='btn btn-default action-button'>Fazer pagamento</a><br/>";
+  							}
   						}
   						html += "Status de Anúncio: "+value.status_text;
 					});
