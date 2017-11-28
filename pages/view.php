@@ -34,7 +34,7 @@
 							html += "<p>"+value.descricao+"</p>";
 							html += "</div></div></div>";
 							html += "<div class='card'><div class='row'><div class='col-md-12'>";
-							html += "<button class='submit proposta' id='"+value.id+"'>Fazer proposta</button>";
+							html += "<button class='submit proposta' id='"+value.id+"' style='display:block !important;'>Fazer proposta</button>";
 							html += "</div></div></div>";
 						});
 						$(".anuncio").html(html);

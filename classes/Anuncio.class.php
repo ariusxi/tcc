@@ -78,8 +78,8 @@
 			$arr = array("status" => "ok", "results" => array());
 			$ids_carregados = array();
 
-			if($_SESSION['level'] == 0 ){
-				$dataquery = $pdo->prepare("SELECT cargas.id, cargas.titulo, cargas.created_at,categorias.categoria, subcategorias.subcategoria FROM cargas INNER JOIN categorias ON cargas.categoria = categorias.id INNER JOIN subcategorias ON subcategorias.id = cargas.id WHERE cargas.id_user = :id_user AND cargas.status = 0");
+			if($_SESSION['level'] == 0){
+				$dataquery = $pdo->prepare("SELECT cargas.id, cargas.titulo, cargas.created_at,categorias.categoria, subcategorias.subcategoria FROM cargas INNER JOIN categorias ON cargas.categoria = categorias.id INNER JOIN subcategorias ON subcategorias.id = cargas.id WHERE cargas.id_user = :id_user AND cargas.status != 4");
 				$dataquery->bindParam(":id_user", $_SESSION['id_user']);
 				$dataquery->execute();
 				if($dataquery->rowCount() > 0){
@@ -101,11 +101,10 @@
 				$dataquery->bindParam(":id_usuario", $_SESSION['id_user']);
 				$dataquery->execute();
 				if($dataquery->rowCount() > 0){
-					$fetch = $dataquery->fetchObject();
-					$select = $pdo->prepare("SELECT cargas.titulo, categorias.categoria, subcategorias.subcategoria FROM cargas INNER JOIN categorias ON cargas.categoria = categorias.id INNER JOIN subcategorias ON subcategorias.id = subcategorias.id WHERE cargas.id = '$fetch->id_cargas'");
-					$select->execute();
-					$carga = $select->fetchObject();
 					while($fetch = $dataquery->fetchObject()){
+						$select = $pdo->prepare("SELECT cargas.titulo, categorias.categoria, subcategorias.subcategoria FROM cargas INNER JOIN categorias ON cargas.categoria = categorias.id INNER JOIN subcategorias ON subcategorias.id = subcategorias.id WHERE cargas.id = '$fetch->id_cargas'");
+						$select->execute();
+						$carga = $select->fetchObject();
 						$arr['results'][] = array(
 							"id" => $fetch->id,
 							"titulo" => $carga->titulo,
@@ -430,45 +429,49 @@
 
 				$arr["results"][0]["pagamento"] = Anuncio::verifyPagamento($fetch->id);
 
+				$arr["results"][0]["transportes"]["length"] = 0;
+
 				if($fetch->status >= 3){
 					$select = $pdo->prepare("SELECT * FROM cargas_to_transporte WHERE id_cargas = ?");
 					$select->execute(array($fetch->id));
-					$transp = $select->fetchObject();
+					if($select->rowCount() > 0){
+						$transp = $select->fetchObject();
 
-					$motorista = $pdo->prepare("SELECT * FROM motorista WHERE id = ?");
-					$motorista->execute(array($transp->id_motorista));
-					$moto = $motorista->fetchObject();
+						$motorista = $pdo->prepare("SELECT * FROM motorista WHERE id = ?");
+						$motorista->execute(array($transp->id_motorista));
+						$moto = $motorista->fetchObject();
 
-					$veiculo = $pdo->prepare("SELECT * FROM veiculo WHERE id = ?");
-					$veiculo->execute(array($transp->id_veiculo));
-					$veic = $veiculo->fetchObject();
+						$veiculo = $pdo->prepare("SELECT * FROM veiculo WHERE id = ?");
+						$veiculo->execute(array($transp->id_veiculo));
+						$veic = $veiculo->fetchObject();
 
-					$arr["results"][0]["transportes"]["length"] = 1;
+						$arr["results"][0]["transportes"]["length"] = 1;
 
-					$arr["results"][0]["transportes"]["motorista"][] = array(
-						"id" => $moto->id,
-						"firstname" => $moto->firstname,
-						"lastname" => $moto->lastname,
-						"rg" => $moto->rg,
-						"oe" => $moto->oe,
-						"cpf" => $moto->cpf,
-						"nregistro" => $moto->nregistro,
-						"cathab" => $moto->cathab,
-						"validade" => date("d/m/Y", strtotime($moto->validade))
-					);
+						$arr["results"][0]["transportes"]["motorista"][] = array(
+							"id" => $moto->id,
+							"firstname" => $moto->firstname,
+							"lastname" => $moto->lastname,
+							"rg" => $moto->rg,
+							"oe" => $moto->oe,
+							"cpf" => $moto->cpf,
+							"nregistro" => $moto->nregistro,
+							"cathab" => $moto->cathab,
+							"validade" => date("d/m/Y", strtotime($moto->validade))
+						);
 
-					$arr["results"][0]["transportes"]["veiculo"][] = array(
-						"id" => $veic->id,
-						"renavam" => $veic->renavam,
-						"chassi" => $veic->chassi,
-						"placa" => $veic->placa,
-						"modelo" => $veic->modelo,
-						"marca" => $veic->marca,
-						"anomodelo" => $veic->anomodelo,
-						"anofabricacao" => $veic->anofabricacao,
-						"categoria" => $veic->categoria,
-						"comentario" => $veic->comentario
-					);
+						$arr["results"][0]["transportes"]["veiculo"][] = array(
+							"id" => $veic->id,
+							"renavam" => $veic->renavam,
+							"chassi" => $veic->chassi,
+							"placa" => $veic->placa,
+							"modelo" => $veic->modelo,
+							"marca" => $veic->marca,
+							"anomodelo" => $veic->anomodelo,
+							"anofabricacao" => $veic->anofabricacao,
+							"categoria" => $veic->categoria,
+							"comentario" => $veic->comentario
+						);
+					}
 				}
 
 				$select = $pdo->prepare("SELECT nome, quantidade FROM items_cargas WHERE id_cargas = ?");
@@ -654,6 +657,9 @@
 			if($dataquery->rowCount() > 0){
 				$carga = 0;
 				while($fetch = $dataquery->fetchObject()){
+					$carga = $pdo->prepare("SELECT status FROM cargas WHERE id = ?");
+					$carga->execute(array($fetch->id_cargas));
+					$c = $carga->fetchObject();
 					$carga = $fetch->id_cargas;
 					$arr["results"][] = array(
 						"id" => $fetch->id,
@@ -663,10 +669,11 @@
 						"lance_inicial" => $fetch->lance_inicial,
 						"info_cliente" => $fetch->info_cliente,
 						"termo_condicoes" => $fetch->termo_condicoes,
-						"status" => $fetch->status,
+						"status" => $c->status,
 						"transporte" => array()
 					);
 				}
+				$arr["results"][0]["transportes"]["length"] = 0;
 				if(Anuncio::verifyTransporte($carga)){
 					$select = $pdo->prepare("SELECT * FROM cargas_to_transporte WHERE id_cargas = ?");
 					$select->execute(array($carga));

@@ -66,7 +66,7 @@
 				url: url+'sys/User/getDadosTransportadora',
 				dataType: 'json',
 				data: {
-					anuncio: anuncio
+					anuncio: transporte
 				},
 				success: function(retorno){
 					if(retorno.status == 'ok'){

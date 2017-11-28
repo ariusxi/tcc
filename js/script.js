@@ -127,12 +127,13 @@ $(function(){
 			url: url+'sys/Anuncio/carregar',
 			dataType: 'json',
 			success: function(retorno){
+				console.log(retorno);
 				if(retorno.status == "ok"){
 					if(localStorage.getItem("level") == 0){
 						var html = "<h3>Anúncios Pendentes</h3><table class='table'>";
 						html += "<thead class='small-text'><tr><th>#</th><th>Titulo</th><th>Data de Anúncio</th><th>Categoria</th><th>Subcategoria</th><th>Ações</th></tr></thead><tbody>";
 						$.each(retorno.results, function(i, value){
-							html += "<tr><td>"+value.id+"</td><td>"+value.titulo+"</td><td>"+value.created_at+"</td><td>"+value.categoria+"</td><td>"+value.subcategoria+"</td><td><a href='' class='view' id='"+value.id+"'>Ver mais</a></td></tr>";
+							html += "<tr><td>"+value.id+"</td><td>"+value.titulo+"</td><td>"+value.created_at+"</td><td>"+value.categoria+"</td><td>"+value.subcategoria+"</td><td><a href='' class='view-anuncio' id='"+value.id+"'>Ver mais</a></td></tr>";
 						});
 						html += "</tbody></table>";
 						$(".anuncios").html(html);
@@ -383,74 +384,76 @@ $(function(){
 			data: {
 				proposta: proposta
 			}, success: function(retorno){
+				console.log(retorno);
 				if(retorno == false){
 					$(".proposta").html("<center><h4>Proposta indisponível</h4></center>");
 				}else{
 					var html = "";
 					$.each(retorno.results, function(i, value){
-							html = "<h3>"+value.titulo+"</h3>";
-							html += "<p>Lance mínimo: R$"+value.lance_minimo+" Lance inicial: R$"+value.lance_inicial+"</p>";
-							html += "<hr />";
-							html += "<h5>Termos e Condições</h5>";
-							html += "<textarea class='termo_condicoes' wrap='off' cols='30' rows='5' disabled='disabled'>"+value.termo_condicoes+"</textarea>";
-							html += "<hr />";
-							html += "<h5>Informações para o cliente</h5>";
-							html += "<textarea class='info_cliente' wrap='off' cols='30' rows='5' disabled='disabled'>"+value.info_cliente+"</textarea>";
-							html += "<hr />";
-							if(value.status == 1){
-								html += "<p>Status de Proposta: Aceita</p>";
-							}else if(value.status == 2){
-								html += "<p>Status de Proposta: Recusada</p>";
+						html += "<h3>"+value.titulo+"</h3>";
+						html += "<p>Lance mínimo: R$"+value.lance_minimo+" Lance inicial: R$"+value.lance_inicial+"</p>";
+						html += "<hr />";
+						html += "<h5>Termos e Condições</h5>";
+						html += "<textarea class='termo_condicoes' wrap='off' cols='30' rows='5' disabled='disabled'>"+value.termo_condicoes+"</textarea>";
+						html += "<hr />";
+						html += "<h5>Informações para o cliente</h5>";
+						html += "<textarea class='info_cliente' wrap='off' cols='30' rows='5' disabled='disabled'>"+value.info_cliente+"</textarea>";
+						html += "<hr />";
+						if(value.status == 1){
+							html += "<p>Status de Proposta: Aceita</p>";
+						}else if(value.status == 2){
+							html += "<p>Status de Proposta: Recusada</p>";
+						}else{
+							html += "<p>Status de Proposta: Pendente</p>";
+						}
+						if(value.transportes.length > 0){
+							html += '<ul class="list-items" style="text-align:left !important;">';
+							$.each(value.transportes.motorista, function(i, motorista){
+								html += "<li class='motorista_"+motorista.id+"'>";
+								html += '<div class="icon"><i class="fa fa-user" aria-hidden="true"></i></div>';
+								html += '<div class="details">';
+								html += '<strong><label>'+motorista.firstname+' '+motorista.lastname+'</label></strong>';
+								html += '<p>';
+								html += 'RG: '+motorista.rg+'<br>';
+								html += 'OE: '+motorista.oe+'<br>';
+								html += 'CPF: '+motorista.cpf+'<br>';
+								html += 'Nº Registro: '+motorista.nregistro+'<br>';
+								html += 'Categoria da Carteira: '+motorista.cathab+'<br>';
+								html += 'Validade: '+motorista.validade+'<br>';
+								html += '</p>';
+								html += '</div>';
+								html += "</li>";
+							});
+							$.each(value.transportes.veiculo, function(i, veiculo){
+								html += "<li class='veiculo_"+veiculo.id+"'>";
+								html += '<div class="icon"><i class="fa fa-truck" aria-hidden="true"></i></div>';
+								html += '<div class="details">';
+								html += '<strong><label>'+veiculo.modelo+'</label></strong>';
+								html += '<p>';
+								html += 'Placa: '+veiculo.placa+'<br>';
+								html += 'Marca: '+veiculo.marca+'<br>';
+								html += 'Chassi: '+veiculo.chassi+'<br>';
+								html += 'Ano de Fabricação: '+veiculo.anofabricacao+'<br>';
+								html += 'Ano do Modelo: '+veiculo.anomodelo+'<br>';
+								html += 'Renavam: '+veiculo.renavam+'<br>';
+								html += '</p>';
+								html += '</div>';
+								html += "</li>";
+							})
+							html += '</ul>';
+							console.log(value.transportes);
+							if(value.transportes.status == '1'){
+								html += '<label>Transporte finalizado</label>';
 							}else{
-								html += "<p>Status de Proposta: Pendente</p>";
+								html += '<label>Prazo de Entrega: '+value.transportes.prazo+'</label>';
+								html += "<div id='retorno_transporte'></div>";
+								html += "<button class='btn btn-primary btn-xl finalizar' id='"+value.transportes.transporte+"' style='margin-top:20px'>Finalizar Transporte</button>";
 							}
-							if(value.transportes.length > 0){
-								html += '<ul class="list-items" style="text-align:left !important;">';
-								$.each(value.transportes.motorista, function(i, motorista){
-									console.log(motorista);
-									html += "<li class='motorista_"+motorista.id+"'>";
-									html += '<div class="icon"><i class="fa fa-user" aria-hidden="true"></i></div>';
-									html += '<div class="details">';
-									html += '<strong><label>'+motorista.firstname+' '+motorista.lastname+'</label></strong>';
-									html += '<p>';
-									html += 'RG: '+motorista.rg+'<br>';
-									html += 'OE: '+motorista.oe+'<br>';
-									html += 'CPF: '+motorista.cpf+'<br>';
-									html += 'Nº Registro: '+motorista.nregistro+'<br>';
-									html += 'Categoria da Carteira: '+motorista.cathab+'<br>';
-									html += 'Validade: '+motorista.validade+'<br>';
-									html += '</p>';
-									html += '</div>';
-									html += "</li>";
-								});
-								$.each(value.transportes.veiculo, function(i, veiculo){
-									html += "<li class='veiculo_"+veiculo.id+"'>";
-									html += '<div class="icon"><i class="fa fa-truck" aria-hidden="true"></i></div>';
-									html += '<div class="details">';
-									html += '<strong><label>'+veiculo.modelo+'</label></strong>';
-									html += '<p>';
-									html += 'Placa: '+veiculo.placa+'<br>';
-									html += 'Marca: '+veiculo.marca+'<br>';
-									html += 'Chassi: '+veiculo.chassi+'<br>';
-									html += 'Ano de Fabricação: '+veiculo.anofabricacao+'<br>';
-									html += 'Ano do Modelo: '+veiculo.anomodelo+'<br>';
-									html += 'Renavam: '+veiculo.renavam+'<br>';
-									html += '</p>';
-									html += '</div>';
-									html += "</li>";
-								})
-								html += '</ul>';
-								console.log(value.transportes);
-								if(value.transportes.status == '1'){
-									html += '<label>Transporte finalizado</label>';
-								}else{
-									html += '<label>Prazo de Entrega: '+value.transportes.prazo+'</label>';
-									html += "<div id='retorno_transporte'></div>";
-									html += "<button class='btn btn-primary btn-xl finalizar' id='"+value.transportes.transporte+"' style='margin-top:20px'>Finalizar Transporte</button>";
-								}
-							}else{
+						}else{
+							if(value.status > 1){
 								html += "<button class='page btn btn-primary btn-xl' id='transporte/"+value.id_cargas+"'>Enviar para transporte</button>";
 							}
+						}
 					});
 
 					$(".proposta").html(html);
@@ -1470,7 +1473,6 @@ $(function(){
 							html += '</div>';
 							html += '<a class="view" id="'+value.proposta.id+'"><i class="fa fa-eye" aria-hidden="true"></i></a>';
   							html += "</ul>";
-  							console.log(value);
   							if(value.transportes.length > 0){
   								html += "<h4 style='margin-top:20px;'>Definidos pela Transportadora</h4>";
 								html += '<ul class="list-items" style="text-align:left !important;">';
@@ -1509,6 +1511,7 @@ $(function(){
 								});
 								html += "</ul>";
 							}
+							console.log(value);
 							if(value.pagamento == false){
   								html += "<a href='"+url+"pagamento/"+value.id+"' target='_blank' class='btn btn-default action-button'>Fazer pagamento</a><br/>";
   							}

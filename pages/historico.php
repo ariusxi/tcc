@@ -27,7 +27,7 @@
 			dataType: 'json',
 			success: function(retorno){
 				if(retorno == false){
-					$(".historico").html("<center><h5>Nenhum Anúncio Registrado</h5></center>");
+					$(".historico").html("<center><h5>Nenhuma atividade registrada</h5></center>");
 				}else{
 					if(localStorage.getItem("level") == 0){
 						var html = "<table><thead><tr><th>#</th><th>Título</th><th>Status</th><th>Criado em</th></tr></tbody><tbody>";

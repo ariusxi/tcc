@@ -9,7 +9,7 @@
 ?>
 <div class="container-fluid">
 	<div class="row">
-		<div class="card proposta">
+		<div class="card proposta" style="display:block !important;">
 			<form action="" method="post" id="proposta" enctype="multipart/form-data">
 				<div class="row">
 					<div class="col-md-12">
@@ -163,7 +163,7 @@
 					<div class="col-md-12" id="feedback"></div>
 					<div class="col-md-12">
 						<input type="hidden" id="anuncio" value="<?= $_SESSION['anuncio']; ?>">
-						<button class='submit proposta'>Fazer proposta</button>
+						<button class='submit proposta' style="display:block;">Fazer proposta</button>
 					</div>
 				</div>
 			</form>

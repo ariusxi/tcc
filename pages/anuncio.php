@@ -139,13 +139,11 @@
 							<label>Estado</label>
 							<input type="text" id="estado_e" class="form-control input-md" required="required">
 						</div>
-						<div class="col-md-12" id="feedback">
-							
-						</div>
 						<div class="col-md-12">
 							<label>Descrição do Anúncio</label>
 							<textarea id="descricao" class="form-control input-md" placeholder="Descrição do Anúncio"></textarea>
 						</div>
+						<div class="col-md-12" id="feedback_a"></div>
 					</div>
 					<input type="button" name="previous" class="previous action-button" value="Anterior" />
 					<input type="submit" name="submit" class="submit action-button" value="Anunciar" />
@@ -189,9 +187,9 @@
 			var categoria = parseInt($("input[name=categoria]:checked").val());
 			var subcategoria = parseInt($("input[name=subcategoria]:checked").val());
 
-			if(cep_r == cep_e && rua_r == rua_e && numero_r == numero_e && bairro_r == bairro_e && cidade_r == cidade_e && estado_r == && estado_e){
-				$("feedback").html("<div style='color:red;'>Você não pode fazer um anúncio com os mesmos endereços de Entrega e Retirada</div>");
-				hidemessage("#feedback");
+			if(cep_r == cep_e && rua_r == rua_e && numero_r == numero_e && bairro_r == bairro_e && cidade_r == cidade_e && estado_r == estado_e){
+				$("#feedback_a").html("<div style='color:red;'>Você não pode fazer um anúncio com os mesmos endereços de Entrega e Retirada</div>");
+				hidemessage("#feedback_a");
 				return false;
 			}
 
