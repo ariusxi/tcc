@@ -182,7 +182,7 @@
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7Uycm85bGgWwbxsfsq-Y5bD2EGNbeBsk"></script>
 <script type="text/javascript">
 	var map;
-	var url = "http://localhost/tcc/";
+	var url = "http://localhost:8000/";
 
 	function initMap(address) {
     	var map = new google.maps.Map(document.getElementById("map"), {

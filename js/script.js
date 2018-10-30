@@ -21,7 +21,7 @@ function meu_callback(conteudo){
 
 $(function(){
 
-	var url = "http://localhost/tcc/";
+	var url = "http://localhost:8000/";
 	var type = "";
 	var current_fs, next_fs, previous_fs;
 	var left, opacity, scale;

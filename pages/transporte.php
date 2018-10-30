@@ -16,7 +16,7 @@
 <script type="text/javascript">
 	$(function(){
 		var transporte = <?= $_GET['anuncio']; ?>;
-		var url = "http://localhost/tcc/";
+		var url = "http://localhost:8000/";
 
 		$(document).on("click", ".enviar", function(){
 			var motorista = $("input[name=motorista]:checked").val();

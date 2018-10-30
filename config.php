@@ -1,4 +1,4 @@
 <?php
 	session_start();
-	define('BASE','http://localhost/tcc/');
+	define('BASE','https://papumtransportes.herokuapp.com/');
 ?>

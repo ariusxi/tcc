@@ -158,7 +158,7 @@
 </div>
 <script type="text/javascript">
 	$(function(){
-		var url = "http://localhost/tcc/";
+		var url = "http://localhost:8000/";
 
 		$("#cep_r").mask("99999-999");
 		$("#cep_e").mask("99999-999");

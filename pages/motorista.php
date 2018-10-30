@@ -75,7 +75,7 @@
 
 <script type="text/javascript">
 	$(function(){
-		var url = "http://localhost/tcc/";
+		var url = "http://localhost:8000/";
 		var nummotoristas = 0;
 
 		$("#cpf").mask("999.999.999-99");

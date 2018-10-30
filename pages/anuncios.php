@@ -18,7 +18,7 @@
 </div>
 <script type="text/javascript">
 	$(document).ready(function(){
-		var url = "http://localhost/tcc/";
+		var url = "http://localhost:8000/";
 
 		$.ajax({
 			type: 'POST',

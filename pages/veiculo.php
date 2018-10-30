@@ -83,7 +83,7 @@
 
 <script type="text/javascript">
 	$(function(){
-		var url = "http://localhost/tcc/";
+		vvar url = "http://localhost:8000/";
 		var numveiculos = 0;
 
 		$("#anomodelo").mask("9999");

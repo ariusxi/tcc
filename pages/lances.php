@@ -15,7 +15,7 @@
 </div>
 <script type="text/javascript">
 	$(function(){
-		var url = "http://localhost/tcc/";
+		var url = "http://localhost:8000/";
 
 		$(".lances").ready(function(){
 			$.ajax({

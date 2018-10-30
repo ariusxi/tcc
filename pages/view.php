@@ -9,7 +9,7 @@
 </div>
 <script type="text/javascript">
 	$(function(){
-		var url = "http://localhost/tcc/";
+		var url = "http://localhost:8000/";
 		var anuncio = "<?= $_GET['anuncio']; ?>";
 
 		$(".anuncio").ready(function(){
